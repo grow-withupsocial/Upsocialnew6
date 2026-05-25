@@ -1,0 +1,817 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Settings - UpSocial</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html, body { height: 100%; }
+        body { 
+            font-family: 'Outfit', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; 
+            background: #ffffff; 
+            color: #0a0e27;
+            padding-bottom: 100px;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        /* Header */
+        .header {
+            background: white;
+            padding: 16px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            border-bottom: 1px solid #f0f2f5;
+            position: sticky;
+            top: 0;
+            z-index: 50;
+        }
+        
+        .header-back {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: #f5f7fa;
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            transition: 0.3s;
+        }
+        
+        .header-back:hover {
+            background: #e8eef7;
+        }
+        
+        .header-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: #0a0e27;
+        }
+        
+        /* Main Content */
+        main { 
+            flex: 1;
+            padding: 16px;
+            max-width: 100%;
+        }
+        
+        /* Tabs */
+        .tabs {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 8px;
+            margin-bottom: 24px;
+            background: #f5f7fa;
+            padding: 4px;
+            border-radius: 10px;
+        }
+        
+        .tab-btn {
+            padding: 12px 16px;
+            background: none;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.3s;
+            color: #8892a8;
+            font-family: 'Outfit', sans-serif;
+            font-size: 13px;
+        }
+        
+        .tab-btn.active {
+            background: white;
+            color: #3CB371;
+            box-shadow: 0 2px 8px rgba(60, 179, 113, 0.1);
+        }
+        
+        /* Tab Content */
+        .tab-content {
+            display: none;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        /* Section */
+        .section {
+            margin-bottom: 24px;
+        }
+        
+        .section-title {
+            font-size: 16px;
+            font-weight: 700;
+            color: #0a0e27;
+            margin-bottom: 16px;
+            letter-spacing: -0.4px;
+        }
+        
+        .section-card {
+            background: white;
+            border-radius: 14px;
+            padding: 20px;
+            border: 1.5px solid #f0f2f5;
+        }
+        
+        /* Form Groups */
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-group:last-child {
+            margin-bottom: 0;
+        }
+        
+        .form-label {
+            display: block;
+            font-size: 13px;
+            font-weight: 600;
+            margin-bottom: 10px;
+            color: #0a0e27;
+            letter-spacing: 0.3px;
+        }
+        
+        .form-input {
+            width: 100%;
+            background: #f5f7fa;
+            border: 1.5px solid #e8eef7;
+            color: #0a0e27;
+            padding: 13px;
+            border-radius: 10px;
+            font-size: 14px;
+            transition: 0.3s;
+            font-family: 'Outfit', sans-serif;
+            letter-spacing: 0.2px;
+        }
+        
+        .form-input:focus {
+            outline: none;
+            border-color: #3CB371;
+            background: white;
+            box-shadow: 0 0 0 4px rgba(60, 179, 113, 0.08);
+        }
+        
+        .form-input::placeholder {
+            color: #c5cad4;
+        }
+        
+        .form-helper {
+            font-size: 12px;
+            color: #8892a8;
+            margin-top: 6px;
+            letter-spacing: 0.2px;
+        }
+        
+        /* Button Group */
+        .button-group {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-top: 24px;
+        }
+        
+        .btn {
+            padding: 14px;
+            border-radius: 10px;
+            font-weight: 600;
+            font-size: 14px;
+            cursor: pointer;
+            transition: 0.3s;
+            border: none;
+            font-family: 'Outfit', sans-serif;
+            letter-spacing: 0.4px;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #3CB371 0%, #2d9a5f 100%);
+            color: white;
+            box-shadow: 0 4px 16px rgba(60, 179, 113, 0.2);
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 24px rgba(60, 179, 113, 0.3);
+        }
+        
+        .btn-secondary {
+            background: #f5f7fa;
+            color: #0a0e27;
+            border: 1.5px solid #e8eef7;
+        }
+        
+        .btn-secondary:hover {
+            background: #e8eef7;
+        }
+        
+        .btn:active {
+            transform: scale(0.98);
+        }
+        
+        /* Status Message */
+        .status-message {
+            padding: 14px 16px;
+            border-radius: 10px;
+            margin-bottom: 16px;
+            font-size: 13px;
+            font-weight: 500;
+            letter-spacing: 0.3px;
+            display: none;
+        }
+        
+        .status-message.show {
+            display: block;
+            animation: slideDown 0.3s ease-out;
+        }
+        
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .status-message.success {
+            background: #d1fae5;
+            color: #065f46;
+            border: 1px solid #6ee7b7;
+        }
+        
+        .status-message.error {
+            background: #fee2e2;
+            color: #991b1b;
+            border: 1px solid #fca5a5;
+        }
+        
+        .status-message.info {
+            background: #dbeafe;
+            color: #0c2340;
+            border: 1px solid #93c5fd;
+        }
+        
+        /* Test Button */
+        .test-btn {
+            background: #f5f7fa;
+            color: #3CB371;
+            border: 1.5px solid #3CB371;
+            margin-top: 12px;
+            width: 100%;
+        }
+        
+        .test-btn:hover {
+            background: rgba(60, 179, 113, 0.08);
+        }
+        
+        /* API Status */
+        .api-status {
+            background: linear-gradient(135deg, #f7f9fc 0%, #f0f5fb 100%);
+            border-radius: 12px;
+            padding: 16px;
+            margin-top: 16px;
+            border: 1.5px solid #e8eef7;
+        }
+        
+        .status-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+            font-size: 13px;
+        }
+        
+        .status-row:last-child {
+            margin-bottom: 0;
+        }
+        
+        .status-label {
+            color: #8892a8;
+            font-weight: 500;
+        }
+        
+        .status-value {
+            color: #0a0e27;
+            font-weight: 600;
+        }
+        
+        .status-badge {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-size: 11px;
+            font-weight: 600;
+            letter-spacing: 0.2px;
+        }
+        
+        .status-badge.connected {
+            background: #d1fae5;
+            color: #065f46;
+        }
+        
+        .status-badge.disconnected {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+        
+        .status-badge.loading {
+            background: #dbeafe;
+            color: #0c2340;
+        }
+        
+        /* Logo Upload */
+        .upload-area {
+            background: #f5f7fa;
+            border: 2px dashed #e8eef7;
+            border-radius: 10px;
+            padding: 24px;
+            text-align: center;
+            cursor: pointer;
+            transition: 0.3s;
+            margin-bottom: 12px;
+        }
+        
+        .upload-area:hover {
+            border-color: #3CB371;
+            background: rgba(60, 179, 113, 0.05);
+        }
+        
+        .upload-area.active {
+            border-color: #3CB371;
+            background: rgba(60, 179, 113, 0.08);
+        }
+        
+        .upload-icon {
+            font-size: 32px;
+            margin-bottom: 8px;
+        }
+        
+        .upload-text {
+            font-size: 13px;
+            color: #8892a8;
+            font-weight: 500;
+        }
+        
+        .upload-input {
+            display: none;
+        }
+        
+        .logo-preview {
+            width: 100%;
+            max-width: 150px;
+            height: 100px;
+            background: white;
+            border-radius: 10px;
+            object-fit: contain;
+            margin-bottom: 12px;
+            border: 1.5px solid #e8eef7;
+        }
+        
+        /* Bottom Navigation */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: white;
+            border-top: 1px solid #f0f2f5;
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            z-index: 100;
+            backdrop-filter: blur(10px);
+            background: rgba(255, 255, 255, 0.95);
+        }
+        
+        .nav-item {
+            padding: 14px 8px 10px;
+            text-align: center;
+            text-decoration: none;
+            color: #8892a8;
+            transition: 0.3s;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            font-size: 10px;
+            border-top: 3px solid transparent;
+            cursor: pointer;
+            font-weight: 500;
+            letter-spacing: 0.2px;
+        }
+        
+        .nav-item.active {
+            color: #3CB371;
+            border-top: 3px solid #3CB371;
+            font-weight: 600;
+        }
+        
+        .nav-item-icon {
+            font-size: 24px;
+        }
+        
+        @media (max-width: 600px) {
+            main { padding: 12px; }
+            .button-group { grid-template-columns: 1fr 1fr; }
+            .tabs { grid-template-columns: 1fr 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <div class="header">
+        <button class="header-back" onclick="goBack()">←</button>
+        <h1 class="header-title">Admin Settings</h1>
+    </div>
+
+    <!-- Main Content -->
+    <main>
+        <!-- Tabs -->
+        <div class="tabs">
+            <button class="tab-btn active" onclick="switchTab('api')">
+                <i class="fas fa-plug"></i> API Settings
+            </button>
+            <button class="tab-btn" onclick="switchTab('branding')">
+                <i class="fas fa-palette"></i> Branding
+            </button>
+        </div>
+
+        <!-- API Settings Tab -->
+        <div class="tab-content active" id="api-tab">
+            <div class="section">
+                <h3 class="section-title">Import Services from External Panel</h3>
+                
+                <div id="apiStatus" class="status-message"></div>
+                
+                <div class="section-card">
+                    <div class="form-group">
+                        <label class="form-label">API Provider</label>
+                        <select class="form-input" id="apiProvider" onchange="updateProviderInfo()">
+                            <option value="custom">Custom API</option>
+                            <option value="bovasmm">BovaSMM</option>
+                            <option value="syncviral">Syncviral</option>
+                            <option value="smm4all">SMM4All</option>
+                        </select>
+                        <div class="form-helper">Select your SMM panel provider or use custom API</div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">API URL</label>
+                        <input type="url" class="form-input" id="apiUrl" placeholder="https://api.example.com/services">
+                        <div class="form-helper" id="urlHelper">Enter the full API endpoint URL</div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">API Key / Token</label>
+                        <input type="password" class="form-input" id="apiKey" placeholder="Enter your API key">
+                        <div class="form-helper">Your authentication key from the SMM panel</div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Authentication Method</label>
+                        <select class="form-input" id="authMethod">
+                            <option value="query">Query Parameter (?api_key=...)</option>
+                            <option value="header">Bearer Token Header</option>
+                            <option value="header-key">Custom Header (X-API-Key)</option>
+                        </select>
+                        <div class="form-helper">How your API expects authentication</div>
+                    </div>
+
+                    <button class="btn btn-primary test-btn" onclick="testAPI()">
+                        <i class="fas fa-test-tube"></i> Test Connection
+                    </button>
+
+                    <div id="apiStatusCard" style="display: none;">
+                        <div class="api-status">
+                            <div class="status-row">
+                                <span class="status-label">Connection Status</span>
+                                <span class="status-badge" id="connStatus">Disconnected</span>
+                            </div>
+                            <div class="status-row">
+                                <span class="status-label">Services Found</span>
+                                <span class="status-value" id="servicesCount">0</span>
+                            </div>
+                            <div class="status-row">
+                                <span class="status-label">Last Updated</span>
+                                <span class="status-value" id="lastUpdate">Never</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="button-group">
+                        <button class="btn btn-primary" onclick="saveAPISettings()">Save & Import Services</button>
+                        <button class="btn btn-secondary" onclick="resetAPISettings()">Reset</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Branding Tab -->
+        <div class="tab-content" id="branding-tab">
+            <div class="section">
+                <h3 class="section-title">Logo & Branding</h3>
+                
+                <div id="brandingStatus" class="status-message"></div>
+                
+                <div class="section-card">
+                    <div class="form-group">
+                        <label class="form-label">Header Logo</label>
+                        <div class="upload-area" onclick="document.getElementById('headerLogoInput').click()">
+                            <div class="upload-icon">📤</div>
+                            <div class="upload-text">Click to upload or drag & drop</div>
+                        </div>
+                        <img id="headerLogoPreview" class="logo-preview" style="display: none;">
+                        <input type="file" id="headerLogoInput" class="upload-input" accept="image/*" onchange="uploadLogo('header')">
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Card Icon Logo</label>
+                        <div class="upload-area" onclick="document.getElementById('cardLogoInput').click()">
+                            <div class="upload-icon">📤</div>
+                            <div class="upload-text">Click to upload or drag & drop</div>
+                        </div>
+                        <img id="cardLogoPreview" class="logo-preview" style="display: none;">
+                        <input type="file" id="cardLogoInput" class="upload-input" accept="image/*" onchange="uploadLogo('card')">
+                    </div>
+
+                    <div class="button-group">
+                        <button class="btn btn-secondary" onclick="resetLogos()">Reset Logos</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Bottom Navigation -->
+    <div class="bottom-nav">
+        <a href="dashboard.html" class="nav-item">
+            <div class="nav-item-icon">🏠</div>
+            <div>Home</div>
+        </a>
+        <a href="services.html" class="nav-item">
+            <div class="nav-item-icon">🛍️</div>
+            <div>Features</div>
+        </a>
+        <a href="my-orders.html" class="nav-item">
+            <div class="nav-item-icon">📋</div>
+            <div>My Order</div>
+        </a>
+        <a href="profile.html" class="nav-item">
+            <div class="nav-item-icon">👤</div>
+            <div>Profile</div>
+        </a>
+    </div>
+
+    <script>
+        // API Provider Information
+        const providers = {
+            custom: {
+                url: '',
+                authMethod: 'header'
+            },
+            bovasmm: {
+                url: 'https://bovasmm.com/api/services',
+                authMethod: 'query'
+            },
+            syncviral: {
+                url: 'https://syncviral.com.ng/api/services',
+                authMethod: 'header'
+            },
+            smm4all: {
+                url: 'https://smm4all.com/api/v1/services',
+                authMethod: 'query'
+            }
+        };
+
+        // Initialize
+        window.addEventListener('load', function() {
+            loadSettings();
+        });
+
+        function switchTab(tab) {
+            // Hide all tabs
+            document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+
+            // Show selected tab
+            document.getElementById(tab + '-tab').classList.add('active');
+            event.target.closest('.tab-btn').classList.add('active');
+        }
+
+        function updateProviderInfo() {
+            const provider = document.getElementById('apiProvider').value;
+            const providerData = providers[provider];
+            
+            if (provider !== 'custom' && providerData.url) {
+                document.getElementById('apiUrl').value = providerData.url;
+                document.getElementById('authMethod').value = providerData.authMethod;
+            } else {
+                document.getElementById('apiUrl').value = '';
+            }
+        }
+
+        function loadSettings() {
+            const apiSettings = localStorage.getItem('upsocial_apiSettings');
+            if (apiSettings) {
+                const settings = JSON.parse(apiSettings);
+                document.getElementById('apiProvider').value = settings.provider || 'custom';
+                document.getElementById('apiUrl').value = settings.url || '';
+                document.getElementById('apiKey').value = settings.key || '';
+                document.getElementById('authMethod').value = settings.authMethod || 'header';
+                
+                // Show API status if connected
+                const lastUpdate = localStorage.getItem('upsocial_apiLastUpdate');
+                if (lastUpdate) {
+                    showAPIStatus();
+                }
+            }
+
+            // Load logos
+            const headerLogo = localStorage.getItem('upsocial_headerLogo');
+            if (headerLogo) {
+                document.getElementById('headerLogoPreview').src = headerLogo;
+                document.getElementById('headerLogoPreview').style.display = 'block';
+            }
+
+            const cardLogo = localStorage.getItem('upsocial_iconLogo');
+            if (cardLogo) {
+                document.getElementById('cardLogoPreview').src = cardLogo;
+                document.getElementById('cardLogoPreview').style.display = 'block';
+            }
+        }
+
+        function showMessage(elementId, message, type) {
+            const element = document.getElementById(elementId);
+            element.textContent = message;
+            element.className = 'status-message show ' + type;
+            
+            setTimeout(() => {
+                element.classList.remove('show');
+            }, 4000);
+        }
+
+        function testAPI() {
+            const url = document.getElementById('apiUrl').value.trim();
+            const key = document.getElementById('apiKey').value.trim();
+            const authMethod = document.getElementById('authMethod').value;
+
+            if (!url || !key) {
+                showMessage('apiStatus', '⚠️ Please enter API URL and Key', 'error');
+                return;
+            }
+
+            showMessage('apiStatus', '🔄 Testing connection...', 'info');
+
+            // Use proxy server to avoid CORS issues
+            const proxyUrl = 'https://newupsocial3.onrender.com/signup.html'; // Change this to your proxy server URL
+            
+            fetch(proxyUrl, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    url: url,
+                    key: key,
+                    auth: authMethod
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.error) {
+                    showMessage('apiStatus', '❌ Error: ' + data.error, 'error');
+                    return;
+                }
+
+                const services = Array.isArray(data) ? data : data.services || data.data || [];
+                
+                if (services.length > 0) {
+                    showMessage('apiStatus', '✅ Connection successful! Found ' + services.length + ' services', 'success');
+                    
+                    localStorage.setItem('upsocial_testServices', JSON.stringify(services));
+                    localStorage.setItem('upsocial_apiLastUpdate', new Date().toLocaleString());
+                    
+                    showAPIStatus();
+                } else {
+                    showMessage('apiStatus', '⚠️ Connection OK but no services found', 'error');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                showMessage('apiStatus', '❌ Proxy error: ' + error.message + '\n\nMake sure proxy server is running: node proxy-server.js', 'error');
+            });
+        }
+
+        function showAPIStatus() {
+            document.getElementById('apiStatusCard').style.display = 'block';
+            
+            const lastUpdate = localStorage.getItem('upsocial_apiLastUpdate');
+            const testServices = localStorage.getItem('upsocial_testServices');
+            const servicesCount = testServices ? JSON.parse(testServices).length : 0;
+
+            document.getElementById('connStatus').textContent = 'Connected';
+            document.getElementById('connStatus').className = 'status-badge connected';
+            document.getElementById('servicesCount').textContent = servicesCount;
+            document.getElementById('lastUpdate').textContent = lastUpdate || 'Never';
+        }
+
+        function saveAPISettings() {
+            const provider = document.getElementById('apiProvider').value;
+            const url = document.getElementById('apiUrl').value.trim();
+            const key = document.getElementById('apiKey').value.trim();
+            const authMethod = document.getElementById('authMethod').value;
+
+            if (!url || !key) {
+                showMessage('apiStatus', '❌ Please fill in API URL and Key', 'error');
+                return;
+            }
+
+            // Save settings
+            const settings = {
+                provider: provider,
+                url: url,
+                key: key,
+                authMethod: authMethod
+            };
+
+            localStorage.setItem('upsocial_apiSettings', JSON.stringify(settings));
+
+            // Trigger service import
+            testAPI();
+
+            setTimeout(() => {
+                if (localStorage.getItem('upsocial_testServices')) {
+                    const services = JSON.parse(localStorage.getItem('upsocial_testServices'));
+                    localStorage.setItem('upsocial_services', JSON.stringify(services));
+                    showMessage('apiStatus', '✅ Settings saved! Services imported: ' + services.length, 'success');
+                }
+            }, 1000);
+        }
+
+        function resetAPISettings() {
+            if (confirm('Are you sure you want to reset API settings?')) {
+                localStorage.removeItem('upsocial_apiSettings');
+                localStorage.removeItem('upsocial_testServices');
+                localStorage.removeItem('upsocial_apiLastUpdate');
+                localStorage.removeItem('upsocial_services');
+                
+                document.getElementById('apiProvider').value = 'custom';
+                document.getElementById('apiUrl').value = '';
+                document.getElementById('apiKey').value = '';
+                document.getElementById('apiStatusCard').style.display = 'none';
+                
+                showMessage('apiStatus', '✅ API settings reset', 'success');
+            }
+        }
+
+        function uploadLogo(type) {
+            const input = document.getElementById(type === 'header' ? 'headerLogoInput' : 'cardLogoInput');
+            const file = input.files[0];
+
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const logoData = e.target.result;
+                const key = type === 'header' ? 'upsocial_headerLogo' : 'upsocial_iconLogo';
+                
+                localStorage.setItem(key, logoData);
+                
+                const preview = document.getElementById(type === 'header' ? 'headerLogoPreview' : 'cardLogoPreview');
+                preview.src = logoData;
+                preview.style.display = 'block';
+                
+                showMessage('brandingStatus', '✅ Logo uploaded successfully', 'success');
+            };
+
+            reader.readAsDataURL(file);
+        }
+
+        function resetLogos() {
+            if (confirm('Are you sure you want to reset logos?')) {
+                localStorage.removeItem('upsocial_headerLogo');
+                localStorage.removeItem('upsocial_iconLogo');
+                
+                document.getElementById('headerLogoPreview').style.display = 'none';
+                document.getElementById('cardLogoPreview').style.display = 'none';
+                document.getElementById('headerLogoInput').value = '';
+                document.getElementById('cardLogoInput').value = '';
+                
+                showMessage('brandingStatus', '✅ Logos reset', 'success');
+            }
+        }
+
+        function goBack() {
+            window.history.back();
+        }
+    </script>
+</body>
+</html>
