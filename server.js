@@ -40,28 +40,39 @@ app.post('/api/proxy', async (req, res) => {
             'User-Agent': 'UpSocial-Proxy/1.0'
         };
 
+        // Standard SMM panel auth format
         if (auth === 'query') {
             const separator = url.includes('?') ? '&' : '?';
-            targetUrl = url + separator + 'api_key=' + encodeURIComponent(key);
+            targetUrl = url + separator + 'key=' + encodeURIComponent(key) + '&action=services';
         } else if (auth === 'header') {
             headers['Authorization'] = 'Bearer ' + key;
         } else if (auth === 'header-key') {
             headers['X-API-Key'] = key;
         }
 
+        console.log('Fetching:', targetUrl);
+        
         const response = await fetch(targetUrl, {
             method: 'GET',
             headers: headers,
             timeout: 30000
         });
 
-        const data = await response.json();
-        res.json(data);
+        const text = await response.text();
+        console.log('Response:', text.substring(0, 500));
+        
+        try {
+            const data = JSON.parse(text);
+            res.json(data);
+        } catch (e) {
+            res.json({ error: 'Invalid JSON', raw: text.substring(0, 200) });
+        }
         
     } catch (error) {
         res.status(500).json({ error: error.message });
     }
 });
+
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
