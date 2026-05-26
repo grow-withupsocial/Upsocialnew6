@@ -659,56 +659,61 @@
         }
 
         function testAPI() {
-            const url = document.getElementById('apiUrl').value.trim();
-            const key = document.getElementById('apiKey').value.trim();
-            const authMethod = document.getElementById('authMethod').value;
+    const url = document.getElementById('apiUrl').value.trim();
+    const key = document.getElementById('apiKey').value.trim();
+    const authMethod = document.getElementById('authMethod').value;
 
-            if (!url || !key) {
-                showMessage('apiStatus', '⚠️ Please enter API URL and Key', 'error');
-                return;
-            }
+    if (!url || !key) {
+        showMessage('apiStatus', '⚠️ Please enter API URL and Key', 'error');
+        return;
+    }
 
-            showMessage('apiStatus', '🔄 Testing connection...', 'info');
+    showMessage('apiStatus', '🔄 Testing connection...', 'info');
 
-            // Use proxy server to avoid CORS issues
-           const proxyUrl = 'https://upsocialnew8.onrender.com/api/proxy'; // Change this to your proxy server URL
-            
-            fetch(proxyUrl, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    url: url,
-                    key: key,
-                    auth: authMethod
-                })
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.error) {
-                    showMessage('apiStatus', '❌ Error: ' + data.error, 'error');
-                    return;
-                }
-
-                const services = Array.isArray(data) ? data : data.services || data.data || [];
-                
-                if (services.length > 0) {
-                    showMessage('apiStatus', '✅ Connection successful! Found ' + services.length + ' services', 'success');
-                    
-                    localStorage.setItem('upsocial_testServices', JSON.stringify(services));
-                    localStorage.setItem('upsocial_apiLastUpdate', new Date().toLocaleString());
-                    
-                    showAPIStatus();
-                } else {
-                    showMessage('apiStatus', '⚠️ Connection OK but no services found', 'error');
-                }
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                showMessage('apiStatus', '❌ Proxy error: ' + error.message + '\n\nMake sure proxy server is running: node proxy-server.js', 'error');
-            });
+    fetch('https://upsocialnew8.onrender.com/api/proxy', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ url: url, key: key, auth: authMethod })
+    })
+    .then(response => {
+        if (!response.ok) throw new Error('HTTP ' + response.status);
+        return response.json();
+    })
+    .then(data => {
+        console.log('Response type:', typeof data);
+        console.log('Is array:', Array.isArray(data));
+        console.log('First item:', data[0]);
+        
+        if (data.error) {
+            showMessage('apiStatus', '❌ Error: ' + data.error, 'error');
+            return;
         }
+
+        // Handle array response (your panel returns an array)
+        let services = [];
+        if (Array.isArray(data)) {
+            services = data;
+        } else if (data.services) {
+            services = data.services;
+        } else if (data.data) {
+            services = data.data;
+        }
+
+        if (services.length > 0) {
+            showMessage('apiStatus', '✅ Connected! Found ' + services.length + ' services', 'success');
+            localStorage.setItem('upsocial_testServices', JSON.stringify(services));
+            localStorage.setItem('upsocial_apiLastUpdate', new Date().toLocaleString());
+            showAPIStatus();
+        } else {
+            showMessage('apiStatus', '⚠️ No services found in response', 'error');
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        showMessage('apiStatus', '❌ Error: ' + error.message, 'error');
+    });
+}
+
 
         function showAPIStatus() {
             document.getElementById('apiStatusCard').style.display = 'block';
