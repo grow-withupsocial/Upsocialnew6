@@ -848,113 +848,120 @@
 
   <script>
     window.addEventListener('load', function() {
-        checkLogin();
-        loadUserData();
-        setTimeout(checkPaymentStatus, 800);
-    });
+    checkLogin();
+    loadUserData();
+    // Remove the setTimeout - run immediately after loadUserData
+    checkPaymentStatus();
+});
+
 
     function checkPaymentStatus() {
-        const urlParams = new URLSearchParams(window.location.search);
-        const reference = urlParams.get('reference');
-        const trxref = urlParams.get('trxref');
+    const urlParams = new URLSearchParams(window.location.search);
+    const reference = urlParams.get('reference');
+    const trxref = urlParams.get('trxref');
+    
+    const paymentRef = reference || trxref;
+    
+    console.log('URL search:', window.location.search);
+    console.log('Payment ref found:', paymentRef);
+    
+    if (!paymentRef) {
+        console.log('No payment reference in URL - skipping verification');
+        return;
+    }
+    
+    console.log('Verifying payment:', paymentRef);
+    
+    fetch('https://upsocialnew8.onrender.com/api/korapay/verify', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ reference: paymentRef })
+    })
+    .then(response => {
+        console.log('Verify response status:', response.status);
+        if (!response.ok) {
+            throw new Error('HTTP error! status: ' + response.status);
+        }
+        return response.json();
+    })
+    .then(data => {
+        console.log('Full verification data:', JSON.stringify(data, null, 2));
         
-        const paymentRef = reference || trxref;
+        // FIX #1: Korapay uses "successful" not "success"
+        // Also handle nested structure variations
+        const paymentStatus = data.data?.status || data.status || '';
+        const isSuccess = paymentStatus === 'successful' || paymentStatus === 'success';
         
-        // Debug: show what's in the URL
-        console.log('URL search:', window.location.search);
-        console.log('Payment ref found:', paymentRef);
-        
-        if (!paymentRef) {
-            console.log('No payment reference in URL - skipping verification');
+        if (!isSuccess) {
+            console.log('Payment not successful. Status:', paymentStatus);
+            alert('❌ Payment verification failed: ' + (data.message || paymentStatus || 'Unknown error'));
+            window.history.replaceState({}, document.title, window.location.pathname);
             return;
         }
         
-        console.log('Verifying payment:', paymentRef);
+        // FIX #2: More robust amount extraction
+        // Korapay returns amount in kobo (multiply by 100), so divide by 100
+        let amountNaira = 0;
+        if (data.data?.amount_paid) {
+            amountNaira = data.data.amount_paid / 100;
+        } else if (data.data?.amount_settled) {
+            amountNaira = data.data.amount_settled / 100;
+        } else if (data.data?.amount) {
+            amountNaira = data.data.amount / 100;
+        } else if (data.amount) {
+            amountNaira = data.amount / 100;
+        }
         
-        fetch('https://upsocialnew8.onrender.com/api/korapay/verify', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ reference: paymentRef })
-        })
-        .then(response => {
-            console.log('Verify response status:', response.status);
-            return response.json();
-        })
-        .then(data => {
-            console.log('Full verification data:', JSON.stringify(data, null, 2));
-            
-            if (data.data?.status === 'success') {
-                // Try different amount fields Korapay might return
-                let amountNaira = data.data.amount_paid 
-                    || data.data.amount_settled 
-                    || data.data.amount 
-                    || 0;
-                
-                // If amount is large (kobo), divide by 100
-                if (amountNaira > 1000) {
-                    amountNaira = amountNaira / 100;
-                }
-                
-                console.log('Amount to credit:', amountNaira);
-                
-                const userEmail = localStorage.getItem('upsocial_currentUser');
-                if (!userEmail) {
-                    alert('Error: User not logged in');
-                    return;
-                }
-                
-                const walletData = localStorage.getItem('upsocial_userWallet_' + userEmail);
-                const wallet = walletData ? JSON.parse(walletData) : { balance: 0, transactions: [] };
-                
-                // Prevent double-credit
-                const alreadyProcessed = wallet.transactions.some(t => t.reference === paymentRef);
-                if (alreadyProcessed) {
-                    console.log('Already processed:', paymentRef);
-                    window.history.replaceState({}, document.title, window.location.pathname);
-                    return;
-                }
-                
-                const oldBalance = wallet.balance;
-                wallet.balance += amountNaira;
-                
-                wallet.transactions.push({
-                    type: 'Deposit via Korapay',
-                    amount: amountNaira,
-                    date: new Date().toLocaleDateString(),
-                    reference: paymentRef,
-                    status: 'completed'
-                });
-                
-                localStorage.setItem('upsocial_userWallet_' + userEmail, JSON.stringify(wallet));
-                
-                // Update display
-                document.getElementById('walletAmount').textContent = '₦' + wallet.balance.toFixed(2);
-                
-                console.log('Balance updated:', oldBalance, '->', wallet.balance);
-                
-                alert('✅ Payment successful! ₦' + amountNaira.toFixed(2) + ' added to your wallet.');
-                
-                // Clear URL params
-                window.history.replaceState({}, document.title, window.location.pathname);
-            } else {
-                console.log('Payment not successful:', data);
-                alert('❌ Payment verification failed: ' + (data.message || data.status || 'Unknown error'));
-                window.history.replaceState({}, document.title, window.location.pathname);
-            }
-        })
-        .catch(error => {
-            console.error('Verification error:', error);
-            alert('❌ Error verifying payment: ' + error.message);
+        console.log('Amount to credit (Naira):', amountNaira);
+        
+        const userEmail = localStorage.getItem('upsocial_currentUser');
+        if (!userEmail) {
+            alert('Error: User not logged in');
+            window.history.replaceState({}, document.title, window.location.pathname);
+            return;
+        }
+        
+        const walletData = localStorage.getItem('upsocial_userWallet_' + userEmail);
+        const wallet = walletData ? JSON.parse(walletData) : { balance: 0, transactions: [] };
+        
+        // Prevent double-credit
+        const alreadyProcessed = wallet.transactions.some(t => t.reference === paymentRef);
+        if (alreadyProcessed) {
+            console.log('Already processed:', paymentRef);
+            window.history.replaceState({}, document.title, window.location.pathname);
+            return;
+        }
+        
+        const oldBalance = wallet.balance;
+        wallet.balance += amountNaira;
+        
+        wallet.transactions.push({
+            type: 'Deposit via Korapay',
+            amount: amountNaira,
+            date: new Date().toLocaleDateString(),
+            reference: paymentRef,
+            status: 'completed'
         });
-    }
+        
+        localStorage.setItem('upsocial_userWallet_' + userEmail, JSON.stringify(wallet));
+        
+        // Update display
+        document.getElementById('walletAmount').textContent = '₦' + wallet.balance.toFixed(2);
+        
+        console.log('Balance updated:', oldBalance, '->', wallet.balance);
+        
+        alert('✅ Payment successful! ₦' + amountNaira.toFixed(2) + ' added to your wallet.');
+        
+        // Clear URL params
+        window.history.replaceState({}, document.title, window.location.pathname);
+    })
+    .catch(error => {
+        console.error('Verification error:', error);
+        alert('❌ Error verifying payment: ' + error.message);
+        // Don't clear URL on error so user can retry
+    });
+}
 
-    function checkLogin() {
-        const isLoggedIn = localStorage.getItem('upsocial_loggedIn');
-        if (!isLoggedIn || isLoggedIn === 'false') {
-            window.location.href = 'login.html';
-            return;
-        }
-    }
 
     function loadUserData() {
         const userData = localStorage.getItem('upsocial_user');
