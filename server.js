@@ -94,11 +94,11 @@ app.post('/api/korapay/initialize', async (req, res) => {
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify({
-                amount: Number(amount) * 100,  // ← FIX #2: Convert to kobo
+                amount: Number(amount),  // ← FIX #2: Convert to kobo
                 currency: 'NGN',
                 reference: reference || 'UPS_' + Date.now(),
                 customer: { email: email },
-                redirect_url: 'https://upsocialnew6.onrender.com/dashboard.html'  // ← FIX #1: Your actual frontend
+                redirect_url: 'https://upsocialnew6.onrender.com/Dashboard.html'  // ← FIX #1: Your actual frontend
             })
         });
 
