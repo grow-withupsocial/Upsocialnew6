@@ -867,6 +867,8 @@ function checkPaymentStatus() {
     const paymentRef = reference || trxref;
     if (!paymentRef) return;
     
+    console.log('Verifying payment:', paymentRef);
+    
     // Verify payment with your proxy
     fetch('https://upsocialnew8.onrender.com/api/korapay/verify', {
         method: 'POST',
@@ -875,18 +877,31 @@ function checkPaymentStatus() {
     })
     .then(response => response.json())
     .then(data => {
+        console.log('Verification response:', data);
+        
         if (data.data?.status === 'success') {
-            const amount = data.data.amount;
+            // Korapay returns amount in KOBO, divide by 100 for Naira
+            const amountKobo = data.data.amount;
+            const amountNaira = amountKobo / 100;
+            
             const userEmail = localStorage.getItem('upsocial_currentUser');
             
             // Update wallet
             const walletData = localStorage.getItem('upsocial_userWallet_' + userEmail);
             const wallet = walletData ? JSON.parse(walletData) : { balance: 0, transactions: [] };
             
-            wallet.balance += amount;
+            // Check if this transaction was already processed (prevent double-credit)
+            const alreadyProcessed = wallet.transactions.some(t => t.reference === paymentRef);
+            if (alreadyProcessed) {
+                console.log('Transaction already processed:', paymentRef);
+                window.history.replaceState({}, document.title, window.location.pathname);
+                return;
+            }
+            
+            wallet.balance += amountNaira;
             wallet.transactions.push({
                 type: 'Deposit via Korapay',
-                amount: amount,
+                amount: amountNaira,
                 date: new Date().toLocaleDateString(),
                 reference: paymentRef,
                 status: 'completed'
@@ -897,14 +912,21 @@ function checkPaymentStatus() {
             // Update display
             document.getElementById('walletAmount').textContent = '₦' + wallet.balance.toFixed(2);
             
-            alert('✅ Payment successful! ₦' + amount + ' added to your wallet.');
+            alert('✅ Payment successful! ₦' + amountNaira.toFixed(2) + ' added to your wallet.');
             
             // Clear URL params
             window.history.replaceState({}, document.title, window.location.pathname);
+        } else {
+            alert('❌ Payment verification failed: ' + (data.message || 'Unknown error'));
+            window.history.replaceState({}, document.title, window.location.pathname);
         }
     })
-    .catch(error => console.error('Verification error:', error));
+    .catch(error => {
+        console.error('Verification error:', error);
+        alert('❌ Error verifying payment. Please check your wallet or contact support.');
+    });
 }
+
 
 
         function checkLogin() {
