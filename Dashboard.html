@@ -1013,6 +1013,69 @@ function checkPaymentStatus() {
     </script>
     
     <script src="https://korablobstorage.blob.core.windows.net/modal-bucket/korapay-collections.min.js"></script>
+
+<!-- Debug Panel for Mobile -->
+<div id="debugPanel" style="
+    position: fixed;
+    bottom: 80px;
+    left: 10px;
+    right: 10px;
+    max-height: 200px;
+    background: rgba(0,0,0,0.85);
+    color: #0f0;
+    font-family: monospace;
+    font-size: 11px;
+    padding: 10px;
+    border-radius: 8px;
+    overflow-y: auto;
+    z-index: 9999;
+    display: none;
+">
+    <div style="color:#fff;font-weight:bold;margin-bottom:5px;">Debug Log <span onclick="document.getElementById('debugPanel').style.display='none'" style="float:right;cursor:pointer;">✕</span></div>
+    <div id="debugContent"></div>
+</div>
+
+<button onclick="toggleDebug()" style="
+    position: fixed;
+    bottom: 290px;
+    right: 10px;
+    background: #333;
+    color: #0f0;
+    border: none;
+    padding: 8px 12px;
+    border-radius: 6px;
+    font-size: 11px;
+    z-index: 9999;
+">🐛 Debug</button>
+
+<script>
+function toggleDebug() {
+    const panel = document.getElementById('debugPanel');
+    panel.style.display = panel.style.display === 'none' ? 'block' : 'none';
+}
+
+// Override console.log to show on screen
+const originalLog = console.log;
+const originalError = console.error;
+const debugContent = document.getElementById('debugContent');
+
+console.log = function(...args) {
+    originalLog.apply(console, args);
+    if (debugContent) {
+        debugContent.innerHTML += '<div style="color:#0f0;">[LOG] ' + args.map(a => typeof a === 'object' ? JSON.stringify(a) : a).join(' ') + '</div>';
+        debugContent.scrollTop = debugContent.scrollHeight;
+    }
+};
+
+console.error = function(...args) {
+    originalError.apply(console, args);
+    if (debugContent) {
+        debugContent.innerHTML += '<div style="color:#f55;">[ERR] ' + args.map(a => typeof a === 'object' ? JSON.stringify(a) : a).join(' ') + '</div>';
+        debugContent.scrollTop = debugContent.scrollHeight;
+    }
+};
+</script>
+
     
 </body>
 </html>
