@@ -848,16 +848,12 @@
 
     <script>
         window.addEventListener('load', function() {
-            checkLogin();
-            loadUserData();
-        });
-
-        // Check for payment reference in URL (after redirect from Korapay)
-window.addEventListener('load', function() {
     checkLogin();
     loadUserData();
-    checkPaymentStatus(); // Add this
+    // Delay checkPaymentStatus so it runs AFTER loadUserData finishes
+    setTimeout(checkPaymentStatus, 500);
 });
+
 
 function checkPaymentStatus() {
     const urlParams = new URLSearchParams(window.location.search);
