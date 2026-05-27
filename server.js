@@ -94,33 +94,12 @@ app.post('/api/korapay/initialize', async (req, res) => {
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify({
-                amount: Number(amount),
+                amount: Number(amount) * 100,  // ← FIX #2: Convert to kobo
                 currency: 'NGN',
                 reference: reference || 'UPS_' + Date.now(),
                 customer: { email: email },
-                redirect_url: 'https://upsocialnew6.onrender.com/Dashboard.html'
-
+                redirect_url: 'https://upsocialnew6.onrender.com/dashboard.html'  // ← FIX #1: Your actual frontend
             })
-        });
-
-        const data = await response.json();
-        res.json(data);
-        
-    } catch (error) {
-        res.status(500).json({ error: error.message });
-    }
-});
-
-// Korapay Verify Payment
-app.post('/api/korapay/verify', async (req, res) => {
-    try {
-        const { reference } = req.body;
-        const KORAPAY_SECRET = process.env.KORAPAY_SECRET_KEY;
-        
-        const response = await fetch('https://api.korapay.com/merchant/api/v1/charges/' + reference, {
-            headers: {
-                'Authorization': 'Bearer ' + KORAPAY_SECRET
-            }
         });
 
         const data = await response.json();
