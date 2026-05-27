@@ -881,8 +881,8 @@ function checkPaymentStatus() {
         
         if (data.data?.status === 'success') {
             // Korapay returns amount in KOBO, divide by 100 for Naira
-            const amountKobo = data.data.amount;
-            const amountNaira = amountKobo / 100;
+            const amountNaira = data.data.amount_paid || data.data.amount_settled || (data.data.amount / 100);
+
             
             const userEmail = localStorage.getItem('upsocial_currentUser');
             
