@@ -98,7 +98,7 @@ app.post('/api/korapay/initialize', async (req, res) => {
                 currency: 'NGN',
                 reference: reference || 'UPS_' + Date.now(),
                 customer: { email: email },
-                redirect_url: 'https://grow-withupsocial.github.io/Upsocialnew6/dashboard.html'
+                redirect_url: 'https://grow-withupsocial.github.io/Upsocialnew6/Dashboard.html'
             })
         });
 
