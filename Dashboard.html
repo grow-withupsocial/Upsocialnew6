@@ -889,8 +889,17 @@
         
         // FIX #1: Korapay uses "successful" not "success"
         // Also handle nested structure variations
-        const paymentStatus = data.data?.status || data.status || '';
-        const isSuccess = paymentStatus === 'successful' || paymentStatus === 'success';
+        const paymentStatus =
+    data.data?.charge_status ||
+    data.data?.status ||
+    data.status ||
+    '';
+
+console.log("Detected payment status:", paymentStatus);
+
+const isSuccess =
+    paymentStatus === 'successful' ||
+    paymentStatus === 'success';
         
         if (!isSuccess) {
             console.log('Payment not successful. Status:', paymentStatus);
@@ -902,17 +911,29 @@
         // FIX #2: More robust amount extraction
         // Korapay returns amount in kobo (multiply by 100), so divide by 100
         let amountNaira = 0;
-        if (data.data?.amount_paid) {
-            amountNaira = data.data.amount_paid / 100;
-        } else if (data.data?.amount_settled) {
-            amountNaira = data.data.amount_settled / 100;
-        } else if (data.data?.amount) {
-            amountNaira = data.data.amount / 100;
-        } else if (data.amount) {
-            amountNaira = data.amount / 100;
-        }
-        
-        console.log('Amount to credit (Naira):', amountNaira);
+
+if (data.data?.amount_paid) {
+
+    amountNaira = data.data.amount_paid;
+
+} else if (data.data?.amount_settled) {
+
+    amountNaira = data.data.amount_settled;
+
+} else if (data.data?.amount) {
+
+    amountNaira = data.data.amount;
+
+} else if (data.amount) {
+
+    amountNaira = data.amount;
+
+}
+
+console.log(
+"Detected Amount:",
+amountNaira
+);
         
         const userEmail = localStorage.getItem('upsocial_currentUser');
         if (!userEmail) {
@@ -1012,7 +1033,10 @@
             body: JSON.stringify({
                 amount: Number(amount),
                 email: userEmail,
-                reference: 'UPS_' + Date.now()
+                reference: 'UPS_' +
+Date.now() +
+'_' +
+Math.floor(Math.random()*100000)
             })
         })
         .then(response => response.json())
