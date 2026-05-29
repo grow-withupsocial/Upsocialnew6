@@ -110,6 +110,59 @@ app.post('/api/korapay/initialize', async (req, res) => {
     }
 });
 
+app.post('/api/korapay/verify', async (req,res)=>{
+
+try{
+
+const {reference}=req.body;
+
+if(!reference){
+
+return res.status(400).json({
+error:'Reference required'
+});
+
+}
+
+const response=await fetch(
+
+'https://api.korapay.com/merchant/api/v1/charges/' + reference,
+
+{
+
+method:'GET',
+
+headers:{
+
+Authorization:
+'Bearer ' + process.env.KORAPAY_SECRET_KEY,
+
+'Content-Type':'application/json'
+
+}
+
+}
+
+);
+
+const data=await response.json();
+
+res.json(data);
+
+}
+
+catch(err){
+
+res.status(500).json({
+
+error:err.message
+
+});
+
+}
+
+});
+
 // Korapay Webhook
 app.post('/api/korapay/webhook', async (req, res) => {
     try {
