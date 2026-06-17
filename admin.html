@@ -65,7 +65,7 @@
         /* Tabs */
         .tabs {
             display: grid;
-            grid-template-columns: repeat(2, 1fr);
+            grid-template-columns: repeat(3, 1fr);
             gap: 8px;
             margin-bottom: 24px;
             background: #f5f7fa;
@@ -74,7 +74,7 @@
         }
         
         .tab-btn {
-            padding: 12px 16px;
+            padding: 12px 8px;
             background: none;
             border: none;
             border-radius: 8px;
@@ -83,7 +83,7 @@
             transition: 0.3s;
             color: #8892a8;
             font-family: 'Outfit', sans-serif;
-            font-size: 13px;
+            font-size: 12px;
         }
         
         .tab-btn.active {
@@ -139,7 +139,7 @@
             letter-spacing: 0.3px;
         }
         
-        .form-input, .form-select {
+        .form-input {
             width: 100%;
             background: #f5f7fa;
             border: 1.5px solid #e8eef7;
@@ -152,7 +152,7 @@
             letter-spacing: 0.2px;
         }
         
-        .form-input:focus, .form-select:focus {
+        .form-input:focus {
             outline: none;
             border-color: #3CB371;
             background: white;
@@ -375,6 +375,94 @@
             margin-bottom: 12px;
             border: 1.5px solid #e8eef7;
         }
+
+        /* Payment Gateway Cards */
+        .gateway-card {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            padding: 14px;
+            border: 1.5px solid #e8eef7;
+            border-radius: 12px;
+            margin-bottom: 10px;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+        .gateway-card:last-child { margin-bottom: 0; }
+        .gateway-card.selected {
+            border-color: #3CB371;
+            background: rgba(60, 179, 113, 0.04);
+        }
+        .gateway-card:hover { border-color: #3CB371; }
+        .gateway-icon {
+            width: 42px; height: 42px;
+            border-radius: 10px;
+            background: #f5f7fa;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 20px; flex-shrink: 0;
+        }
+        .gateway-info { flex: 1; }
+        .gateway-name { font-size: 14px; font-weight: 700; color: #0a0e27; }
+        .gateway-desc { font-size: 12px; color: #8892a8; margin-top: 2px; }
+        .gateway-check {
+            width: 22px; height: 22px;
+            border-radius: 50%;
+            border: 2px solid #e8eef7;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 11px; color: white;
+            background: white; flex-shrink: 0; transition: 0.3s;
+        }
+        .gateway-card.selected .gateway-check {
+            background: #3CB371;
+            border-color: #3CB371;
+        }
+
+        /* Gateway credential sections */
+        .gateway-fields {
+            display: none;
+            margin-top: 16px;
+        }
+        .gateway-fields.active { display: block; }
+
+        .fields-title {
+            font-size: 13px;
+            font-weight: 700;
+            color: #0a0e27;
+            margin-bottom: 14px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #f0f2f5;
+        }
+
+        /* Toggle */
+        .toggle-row {
+            display: flex; align-items: center;
+            justify-content: space-between;
+            padding: 13px 0;
+            border-bottom: 1px solid #f0f2f5;
+        }
+        .toggle-row:last-child { border-bottom: none; padding-bottom: 0; }
+        .toggle-info { flex: 1; }
+        .toggle-label { font-size: 13px; font-weight: 600; color: #0a0e27; }
+        .toggle-desc { font-size: 12px; color: #8892a8; margin-top: 2px; }
+        .toggle {
+            position: relative; width: 46px; height: 25px;
+            flex-shrink: 0; margin-left: 12px;
+        }
+        .toggle input { opacity: 0; width: 0; height: 0; }
+        .toggle-slider {
+            position: absolute; cursor: pointer;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: #e8eef7; border-radius: 25px; transition: 0.3s;
+        }
+        .toggle-slider:before {
+            position: absolute; content: '';
+            height: 19px; width: 19px;
+            left: 3px; bottom: 3px;
+            background: white; border-radius: 50%; transition: 0.3s;
+            box-shadow: 0 1px 4px rgba(0,0,0,0.15);
+        }
+        .toggle input:checked + .toggle-slider { background: #3CB371; }
+        .toggle input:checked + .toggle-slider:before { transform: translateX(21px); }
         
         /* Bottom Navigation */
         .bottom-nav {
@@ -418,50 +506,10 @@
             font-size: 24px;
         }
         
-        /* Spinner */
-        .spinner {
-            display: inline-block;
-            width: 14px;
-            height: 14px;
-            border: 2px solid rgba(255,255,255,0.3);
-            border-radius: 50%;
-            border-top-color: white;
-            animation: spin 0.8s linear infinite;
-            margin-right: 6px;
-            vertical-align: middle;
-        }
-        
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
-        
-        /* Service Preview */
-        .service-preview {
-            margin-top: 16px;
-            max-height: 200px;
-            overflow-y: auto;
-            background: #f8fafc;
-            border-radius: 10px;
-            padding: 12px;
-            border: 1px solid #e8eef7;
-        }
-        
-        .service-preview-item {
-            display: flex;
-            justify-content: space-between;
-            padding: 8px;
-            border-bottom: 1px solid #f0f2f5;
-            font-size: 12px;
-        }
-        
-        .service-preview-item:last-child {
-            border-bottom: none;
-        }
-        
         @media (max-width: 600px) {
             main { padding: 12px; }
             .button-group { grid-template-columns: 1fr 1fr; }
-            .tabs { grid-template-columns: 1fr 1fr; }
+            .tabs { grid-template-columns: repeat(3, 1fr); }
         }
     </style>
 </head>
@@ -476,10 +524,13 @@
     <main>
         <!-- Tabs -->
         <div class="tabs">
-            <button class="tab-btn active" onclick="switchTab(event, 'api')">
+            <button class="tab-btn active" onclick="switchTab('api', this)">
                 <i class="fas fa-plug"></i> API Settings
             </button>
-            <button class="tab-btn" onclick="switchTab(event, 'branding')">
+            <button class="tab-btn" onclick="switchTab('payment', this)">
+                <i class="fas fa-credit-card"></i> Payment
+            </button>
+            <button class="tab-btn" onclick="switchTab('branding', this)">
                 <i class="fas fa-palette"></i> Branding
             </button>
         </div>
@@ -494,7 +545,7 @@
                 <div class="section-card">
                     <div class="form-group">
                         <label class="form-label">API Provider</label>
-                        <select class="form-select" id="apiProvider" onchange="updateProviderInfo()">
+                        <select class="form-input" id="apiProvider" onchange="updateProviderInfo()">
                             <option value="custom">Custom API</option>
                             <option value="bovasmm">BovaSMM</option>
                             <option value="syncviral">Syncviral</option>
@@ -517,7 +568,7 @@
 
                     <div class="form-group">
                         <label class="form-label">Authentication Method</label>
-                        <select class="form-select" id="authMethod">
+                        <select class="form-input" id="authMethod">
                             <option value="query">Query Parameter (?api_key=...)</option>
                             <option value="header">Bearer Token Header</option>
                             <option value="header-key">Custom Header (X-API-Key)</option>
@@ -525,8 +576,8 @@
                         <div class="form-helper">How your API expects authentication</div>
                     </div>
 
-                    <button class="btn btn-primary test-btn" id="testBtn" onclick="testAPI()">
-                        <i class="fas fa-vial"></i> Test Connection
+                    <button class="btn btn-primary test-btn" onclick="testAPI()">
+                        <i class="fas fa-plug"></i> Test Connection
                     </button>
 
                     <div id="apiStatusCard" style="display: none;">
@@ -544,13 +595,215 @@
                                 <span class="status-value" id="lastUpdate">Never</span>
                             </div>
                         </div>
-                        <div id="servicePreview" class="service-preview" style="display: none;"></div>
                     </div>
 
                     <div class="button-group">
-                        <button class="btn btn-primary" id="saveBtn" onclick="saveAPISettings()">Save & Import Services</button>
+                        <button class="btn btn-primary" onclick="saveAPISettings()">Save & Import Services</button>
                         <button class="btn btn-secondary" onclick="resetAPISettings()">Reset</button>
                     </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Payment Tab -->
+        <div class="tab-content" id="payment-tab">
+            <div class="section">
+                <h3 class="section-title">Payment Gateways</h3>
+
+                <div id="paymentStatus" class="status-message"></div>
+
+                <!-- Select gateway -->
+                <div class="section-card" style="margin-bottom: 16px;">
+                    <label class="form-label" style="margin-bottom: 14px;">Select Active Gateway</label>
+
+                    <div class="gateway-card selected" id="gw-paystack" onclick="selectGateway('paystack')">
+                        <div class="gateway-icon">💳</div>
+                        <div class="gateway-info">
+                            <div class="gateway-name">Paystack</div>
+                            <div class="gateway-desc">Cards, bank transfer, USSD — Nigeria & Ghana</div>
+                        </div>
+                        <div class="gateway-check">✓</div>
+                    </div>
+
+                    <div class="gateway-card" id="gw-flutterwave" onclick="selectGateway('flutterwave')">
+                        <div class="gateway-icon">🦋</div>
+                        <div class="gateway-info">
+                            <div class="gateway-name">Flutterwave</div>
+                            <div class="gateway-desc">Cards, mobile money, bank — pan-African</div>
+                        </div>
+                        <div class="gateway-check">✓</div>
+                    </div>
+
+                    <div class="gateway-card" id="gw-korapay" onclick="selectGateway('korapay')">
+                        <div class="gateway-icon">🟢</div>
+                        <div class="gateway-info">
+                            <div class="gateway-name">Korapay</div>
+                            <div class="gateway-desc">Cards, bank transfer, virtual accounts — Nigeria</div>
+                        </div>
+                        <div class="gateway-check">✓</div>
+                    </div>
+
+                    <div class="gateway-card" id="gw-monnify" onclick="selectGateway('monnify')">
+                        <div class="gateway-icon">🏦</div>
+                        <div class="gateway-info">
+                            <div class="gateway-name">Monnify</div>
+                            <div class="gateway-desc">Bank transfer & reserved accounts — Nigeria</div>
+                        </div>
+                        <div class="gateway-check">✓</div>
+                    </div>
+
+                    <div class="gateway-card" id="gw-squad" onclick="selectGateway('squad')">
+                        <div class="gateway-icon">⚡</div>
+                        <div class="gateway-info">
+                            <div class="gateway-name">Squad (GT Bank)</div>
+                            <div class="gateway-desc">Cards, bank transfer — powered by GTBank</div>
+                        </div>
+                        <div class="gateway-check">✓</div>
+                    </div>
+
+                    <div class="gateway-card" id="gw-manual" onclick="selectGateway('manual')">
+                        <div class="gateway-icon">🧾</div>
+                        <div class="gateway-info">
+                            <div class="gateway-name">Manual Bank Transfer</div>
+                            <div class="gateway-desc">Users pay directly to your bank account</div>
+                        </div>
+                        <div class="gateway-check">✓</div>
+                    </div>
+                </div>
+
+                <!-- Paystack fields -->
+                <div class="section-card gateway-fields active" id="fields-paystack" style="margin-bottom: 16px;">
+                    <div class="fields-title">Paystack Credentials</div>
+                    <div class="form-group">
+                        <label class="form-label">Public Key</label>
+                        <input type="text" class="form-input" id="paystackPublic" placeholder="pk_live_xxxxxxxxxxxxxxxx">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Secret Key</label>
+                        <input type="password" class="form-input" id="paystackSecret" placeholder="sk_live_xxxxxxxxxxxxxxxx">
+                        <div class="form-helper">Get from Paystack Dashboard → Settings → API Keys & Webhooks</div>
+                    </div>
+                </div>
+
+                <!-- Flutterwave fields -->
+                <div class="section-card gateway-fields" id="fields-flutterwave" style="margin-bottom: 16px;">
+                    <div class="fields-title">Flutterwave Credentials</div>
+                    <div class="form-group">
+                        <label class="form-label">Public Key</label>
+                        <input type="text" class="form-input" id="flwPublic" placeholder="FLWPUBK-xxxxxxxxxxxxxxxx-X">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Secret Key</label>
+                        <input type="password" class="form-input" id="flwSecret" placeholder="FLWSECK-xxxxxxxxxxxxxxxx-X">
+                        <div class="form-helper">Get from Flutterwave Dashboard → Settings → API</div>
+                    </div>
+                </div>
+
+                <!-- Korapay fields -->
+                <div class="section-card gateway-fields" id="fields-korapay" style="margin-bottom: 16px;">
+                    <div class="fields-title">Korapay Credentials</div>
+                    <div class="form-group">
+                        <label class="form-label">Public Key</label>
+                        <input type="text" class="form-input" id="koraPublic" placeholder="pk_live_xxxxxxxxxxxxxxxx">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Secret Key</label>
+                        <input type="password" class="form-input" id="koraSecret" placeholder="sk_live_xxxxxxxxxxxxxxxx">
+                        <div class="form-helper">Get from Korapay Dashboard → Settings → API Keys</div>
+                    </div>
+                </div>
+
+                <!-- Monnify fields -->
+                <div class="section-card gateway-fields" id="fields-monnify" style="margin-bottom: 16px;">
+                    <div class="fields-title">Monnify Credentials</div>
+                    <div class="form-group">
+                        <label class="form-label">API Key</label>
+                        <input type="text" class="form-input" id="monnifyKey" placeholder="MK_TEST_xxxxxxxxxxxxxxxx">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Secret Key</label>
+                        <input type="password" class="form-input" id="monnifySecret" placeholder="xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Contract Code</label>
+                        <input type="text" class="form-input" id="monnifyContract" placeholder="Your Monnify contract code">
+                        <div class="form-helper">Get from Monnify Dashboard → Settings → API Keys</div>
+                    </div>
+                </div>
+
+                <!-- Squad fields -->
+                <div class="section-card gateway-fields" id="fields-squad" style="margin-bottom: 16px;">
+                    <div class="fields-title">Squad Credentials</div>
+                    <div class="form-group">
+                        <label class="form-label">Public Key</label>
+                        <input type="text" class="form-input" id="squadPublic" placeholder="sandbox_pk_xxxxxxxxxxxxxxxx">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Secret Key</label>
+                        <input type="password" class="form-input" id="squadSecret" placeholder="sandbox_sk_xxxxxxxxxxxxxxxx">
+                        <div class="form-helper">Get from Squad Dashboard → Settings → API Keys</div>
+                    </div>
+                </div>
+
+                <!-- Manual bank transfer fields -->
+                <div class="section-card gateway-fields" id="fields-manual" style="margin-bottom: 16px;">
+                    <div class="fields-title">Bank Account Details</div>
+                    <div class="form-group">
+                        <label class="form-label">Bank Name</label>
+                        <input type="text" class="form-input" id="bankName" placeholder="e.g. First Bank Nigeria">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Account Number</label>
+                        <input type="text" class="form-input" id="bankAccount" placeholder="0123456789">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Account Name</label>
+                        <input type="text" class="form-input" id="bankAccountName" placeholder="Your Full Name or Business Name">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Payment Instructions</label>
+                        <textarea class="form-input" id="bankInstructions" rows="3" placeholder="e.g. Send proof of payment to our WhatsApp after transfer" style="resize: none;"></textarea>
+                        <div class="form-helper">This message will be shown to users when they choose to pay</div>
+                    </div>
+                </div>
+
+                <!-- Payment toggle settings -->
+                <div class="section-card">
+                    <div class="toggle-row">
+                        <div class="toggle-info">
+                            <div class="toggle-label">Test / Sandbox Mode</div>
+                            <div class="toggle-desc">Use test keys — no real charges</div>
+                        </div>
+                        <label class="toggle">
+                            <input type="checkbox" id="testMode">
+                            <span class="toggle-slider"></span>
+                        </label>
+                    </div>
+                    <div class="toggle-row">
+                        <div class="toggle-info">
+                            <div class="toggle-label">Auto-fund Wallet on Payment</div>
+                            <div class="toggle-desc">Credit user wallet immediately after successful payment</div>
+                        </div>
+                        <label class="toggle">
+                            <input type="checkbox" id="autoFund" checked>
+                            <span class="toggle-slider"></span>
+                        </label>
+                    </div>
+                    <div class="toggle-row">
+                        <div class="toggle-info">
+                            <div class="toggle-label">Send Email Receipt</div>
+                            <div class="toggle-desc">Email payment confirmation to users</div>
+                        </div>
+                        <label class="toggle">
+                            <input type="checkbox" id="emailReceipt">
+                            <span class="toggle-slider"></span>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="button-group">
+                    <button class="btn btn-primary" onclick="savePaymentSettings()">Save Settings</button>
+                    <button class="btn btn-secondary" onclick="resetPaymentSettings()">Reset</button>
                 </div>
             </div>
         </div>
@@ -591,7 +844,7 @@
         </div>
     </main>
 
-    <!-- Bottom Navigation -->
+    <!-- Bottom Navigation (unchanged from original) -->
     <div class="bottom-nav">
         <a href="dashboard.html" class="nav-item">
             <div class="nav-item-icon">🏠</div>
@@ -614,43 +867,29 @@
     <script>
         // API Provider Information
         const providers = {
-            custom: {
-                url: '',
-                authMethod: 'header'
-            },
-            bovasmm: {
-                url: 'https://bovasmm.com/api/services',
-                authMethod: 'query'
-            },
-            syncviral: {
-                url: 'https://syncviral.com.ng/api/services',
-                authMethod: 'header'
-            },
-            smm4all: {
-                url: 'https://smm4all.com/api/v1/services',
-                authMethod: 'query'
-            }
+            custom: { url: '', authMethod: 'header' },
+            bovasmm: { url: 'https://bovasmm.com/api/services', authMethod: 'query' },
+            syncviral: { url: 'https://syncviral.com.ng/api/services', authMethod: 'header' },
+            smm4all: { url: 'https://smm4all.com/api/v1/services', authMethod: 'query' }
         };
 
-        // Initialize
+        let selectedGateway = 'paystack';
+
         window.addEventListener('load', function() {
             loadSettings();
         });
 
-        function switchTab(event, tab) {
-            // Hide all tabs
+        // FIXED: btn is passed directly instead of relying on event
+        function switchTab(tab, btn) {
             document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
             document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-
-            // Show selected tab
             document.getElementById(tab + '-tab').classList.add('active');
-            event.target.closest('.tab-btn').classList.add('active');
+            btn.classList.add('active');
         }
 
         function updateProviderInfo() {
             const provider = document.getElementById('apiProvider').value;
             const providerData = providers[provider];
-            
             if (provider !== 'custom' && providerData.url) {
                 document.getElementById('apiUrl').value = providerData.url;
                 document.getElementById('authMethod').value = providerData.authMethod;
@@ -660,36 +899,53 @@
         }
 
         function loadSettings() {
-            try {
-                const apiSettings = localStorage.getItem('upsocial_apiSettings');
-                if (apiSettings) {
-                    const settings = JSON.parse(apiSettings);
-                    document.getElementById('apiProvider').value = settings.provider || 'custom';
-                    document.getElementById('apiUrl').value = settings.url || '';
-                    document.getElementById('apiKey').value = settings.key || '';
-                    document.getElementById('authMethod').value = settings.authMethod || 'header';
-                    
-                    // Show API status if connected
-                    const lastUpdate = localStorage.getItem('upsocial_apiLastUpdate');
-                    if (lastUpdate) {
-                        showAPIStatus();
-                    }
-                }
+            // Load API settings
+            const apiSettings = localStorage.getItem('upsocial_apiSettings');
+            if (apiSettings) {
+                const settings = JSON.parse(apiSettings);
+                document.getElementById('apiProvider').value = settings.provider || 'custom';
+                document.getElementById('apiUrl').value = settings.url || '';
+                document.getElementById('apiKey').value = settings.key || '';
+                document.getElementById('authMethod').value = settings.authMethod || 'header';
+                if (localStorage.getItem('upsocial_apiLastUpdate')) showAPIStatus();
+            }
 
-                // Load logos
-                const headerLogo = localStorage.getItem('upsocial_headerLogo');
-                if (headerLogo) {
-                    document.getElementById('headerLogoPreview').src = headerLogo;
-                    document.getElementById('headerLogoPreview').style.display = 'block';
-                }
+            // Load payment settings
+            const paySettings = localStorage.getItem('upsocial_paymentSettings');
+            if (paySettings) {
+                const p = JSON.parse(paySettings);
+                selectedGateway = p.gateway || 'paystack';
+                selectGateway(selectedGateway);
+                document.getElementById('paystackPublic').value = p.paystackPublic || '';
+                document.getElementById('paystackSecret').value = p.paystackSecret || '';
+                document.getElementById('flwPublic').value = p.flwPublic || '';
+                document.getElementById('flwSecret').value = p.flwSecret || '';
+                document.getElementById('koraPublic').value = p.koraPublic || '';
+                document.getElementById('koraSecret').value = p.koraSecret || '';
+                document.getElementById('monnifyKey').value = p.monnifyKey || '';
+                document.getElementById('monnifySecret').value = p.monnifySecret || '';
+                document.getElementById('monnifyContract').value = p.monnifyContract || '';
+                document.getElementById('squadPublic').value = p.squadPublic || '';
+                document.getElementById('squadSecret').value = p.squadSecret || '';
+                document.getElementById('bankName').value = p.bankName || '';
+                document.getElementById('bankAccount').value = p.bankAccount || '';
+                document.getElementById('bankAccountName').value = p.bankAccountName || '';
+                document.getElementById('bankInstructions').value = p.bankInstructions || '';
+                document.getElementById('testMode').checked = p.testMode || false;
+                document.getElementById('autoFund').checked = p.autoFund !== false;
+                document.getElementById('emailReceipt').checked = p.emailReceipt || false;
+            }
 
-                const cardLogo = localStorage.getItem('upsocial_iconLogo');
-                if (cardLogo) {
-                    document.getElementById('cardLogoPreview').src = cardLogo;
-                    document.getElementById('cardLogoPreview').style.display = 'block';
-                }
-            } catch (e) {
-                console.error('Error loading settings:', e);
+            // Load logos
+            const headerLogo = localStorage.getItem('upsocial_headerLogo');
+            if (headerLogo) {
+                document.getElementById('headerLogoPreview').src = headerLogo;
+                document.getElementById('headerLogoPreview').style.display = 'block';
+            }
+            const cardLogo = localStorage.getItem('upsocial_iconLogo');
+            if (cardLogo) {
+                document.getElementById('cardLogoPreview').src = cardLogo;
+                document.getElementById('cardLogoPreview').style.display = 'block';
             }
         }
 
@@ -697,287 +953,144 @@
             const element = document.getElementById(elementId);
             element.textContent = message;
             element.className = 'status-message show ' + type;
-            
-            setTimeout(() => {
-                element.classList.remove('show');
-            }, 4000);
+            setTimeout(() => { element.classList.remove('show'); }, 4000);
         }
 
-        function setButtonLoading(btnId, loading) {
-            const btn = document.getElementById(btnId);
-            if (loading) {
-                btn.disabled = true;
-                btn.innerHTML = '<span class="spinner"></span> Testing...';
-            } else {
-                btn.disabled = false;
-                btn.innerHTML = '<i class="fas fa-vial"></i> Test Connection';
-            }
-        }
-
-        function setSaveLoading(loading) {
-            const btn = document.getElementById('saveBtn');
-            if (loading) {
-                btn.disabled = true;
-                btn.innerHTML = '<span class="spinner"></span> Saving...';
-            } else {
-                btn.disabled = false;
-                btn.innerHTML = 'Save & Import Services';
-            }
-        }
-
-        async function testAPI() {
+        function testAPI() {
             const url = document.getElementById('apiUrl').value.trim();
             const key = document.getElementById('apiKey').value.trim();
             const authMethod = document.getElementById('authMethod').value;
-
-            if (!url || !key) {
-                showMessage('apiStatus', '⚠️ Please enter API URL and Key', 'error');
-                return;
-            }
-
-            // Validate URL
-            try {
-                new URL(url);
-            } catch {
-                showMessage('apiStatus', '⚠️ Please enter a valid URL', 'error');
-                return;
-            }
-
-            setButtonLoading('testBtn', true);
+            if (!url || !key) { showMessage('apiStatus', '⚠️ Please enter API URL and Key', 'error'); return; }
             showMessage('apiStatus', '🔄 Testing connection...', 'info');
-
-            try {
-                let fetchOptions = {
-                    method: 'GET',
-                    headers: {}
-                };
-
-                let finalUrl = url;
-
-                // Build request based on auth method
-                if (authMethod === 'query') {
-                    const separator = url.includes('?') ? '&' : '?';
-                    finalUrl = `${url}${separator}api_key=${encodeURIComponent(key)}`;
-                } else if (authMethod === 'header') {
-                    fetchOptions.headers['Authorization'] = `Bearer ${key}`;
-                } else if (authMethod === 'header-key') {
-                    fetchOptions.headers['X-API-Key'] = key;
-                }
-
-                // Try direct fetch first (will fail on CORS but let's try)
-                // For production, use your proxy
-                const proxyUrl = 'https://upsocialnew8.onrender.com/api/proxy';
-                
-                const response = await fetch(proxyUrl, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ 
-                        url: finalUrl, 
-                        key: key, 
-                        auth: authMethod 
-                    })
-                });
-
-                if (!response.ok) {
-                    throw new Error('HTTP ' + response.status);
-                }
-
-                const data = await response.json();
-                console.log('API Response:', data);
-
-                // Handle error response from proxy
-                if (data.error) {
-                    throw new Error(data.error);
-                }
-
-                // Extract services from various response formats
+            fetch('https://upsocialnew8.onrender.com/api/proxy', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ url: url, key: key, auth: authMethod })
+            })
+            .then(response => {
+                if (!response.ok) throw new Error('HTTP ' + response.status);
+                return response.json();
+            })
+            .then(data => {
+                if (data.error) { showMessage('apiStatus', '❌ Error: ' + data.error, 'error'); return; }
                 let services = [];
-                if (Array.isArray(data)) {
-                    services = data;
-                } else if (data.services && Array.isArray(data.services)) {
-                    services = data.services;
-                } else if (data.data && Array.isArray(data.data)) {
-                    services = data.data;
-                } else if (data.result && Array.isArray(data.result)) {
-                    services = data.result;
-                } else if (typeof data === 'object' && data !== null) {
-                    // Some APIs return an object with numeric keys
-                    services = Object.values(data).filter(item => item && typeof item === 'object');
-                }
-
+                if (Array.isArray(data)) services = data;
+                else if (data.services) services = data.services;
+                else if (data.data) services = data.data;
                 if (services.length > 0) {
-                    showMessage('apiStatus', `✅ Connected! Found ${services.length} services`, 'success');
+                    showMessage('apiStatus', '✅ Connected! Found ' + services.length + ' services', 'success');
                     localStorage.setItem('upsocial_testServices', JSON.stringify(services));
                     localStorage.setItem('upsocial_apiLastUpdate', new Date().toLocaleString());
                     showAPIStatus();
-                    showServicePreview(services.slice(0, 5)); // Show first 5
                 } else {
-                    showMessage('apiStatus', '⚠️ No services found in response. Check console for details.', 'error');
-                    console.log('Response structure:', data);
+                    showMessage('apiStatus', '⚠️ No services found in response', 'error');
                 }
-            } catch (error) {
-                console.error('API Test Error:', error);
-                showMessage('apiStatus', '❌ Error: ' + error.message, 'error');
-                
-                // Show disconnected status
-                document.getElementById('apiStatusCard').style.display = 'block';
-                document.getElementById('connStatus').textContent = 'Failed';
-                document.getElementById('connStatus').className = 'status-badge disconnected';
-            } finally {
-                setButtonLoading('testBtn', false);
-            }
+            })
+            .catch(error => { showMessage('apiStatus', '❌ Error: ' + error.message, 'error'); });
         }
 
         function showAPIStatus() {
             document.getElementById('apiStatusCard').style.display = 'block';
-            
             const lastUpdate = localStorage.getItem('upsocial_apiLastUpdate');
             const testServices = localStorage.getItem('upsocial_testServices');
-            let servicesCount = 0;
-            
-            try {
-                servicesCount = testServices ? JSON.parse(testServices).length : 0;
-            } catch (e) {
-                console.error('Error parsing services:', e);
-            }
-
+            const servicesCount = testServices ? JSON.parse(testServices).length : 0;
             document.getElementById('connStatus').textContent = 'Connected';
             document.getElementById('connStatus').className = 'status-badge connected';
             document.getElementById('servicesCount').textContent = servicesCount;
             document.getElementById('lastUpdate').textContent = lastUpdate || 'Never';
         }
 
-        function showServicePreview(services) {
-            const previewDiv = document.getElementById('servicePreview');
-            if (!services || services.length === 0) {
-                previewDiv.style.display = 'none';
-                return;
-            }
-
-            let html = '<div style="font-size: 12px; font-weight: 600; margin-bottom: 8px; color: #0a0e27;">Preview (First 5):</div>';
-            services.forEach((s, i) => {
-                const name = s.name || s.service_name || s.title || 'Unknown';
-                const price = s.rate || s.price || s.cost || 'N/A';
-                html += `
-                    <div class="service-preview-item">
-                        <span>${i + 1}. ${name}</span>
-                        <span style="color: #3CB371; font-weight: 600;">$${price}</span>
-                    </div>
-                `;
-            });
-            
-            previewDiv.innerHTML = html;
-            previewDiv.style.display = 'block';
-        }
-
-        async function saveAPISettings() {
+        function saveAPISettings() {
             const provider = document.getElementById('apiProvider').value;
             const url = document.getElementById('apiUrl').value.trim();
             const key = document.getElementById('apiKey').value.trim();
             const authMethod = document.getElementById('authMethod').value;
-
-            if (!url || !key) {
-                showMessage('apiStatus', '❌ Please fill in API URL and Key', 'error');
-                return;
-            }
-
-            setSaveLoading(true);
-
-            // Save settings
-            const settings = {
-                provider: provider,
-                url: url,
-                key: key,
-                authMethod: authMethod
-            };
-
-            localStorage.setItem('upsocial_apiSettings', JSON.stringify(settings));
-
-            // Test and import services
-            try {
-                let fetchOptions = {
-                    method: 'GET',
-                    headers: {}
-                };
-
-                let finalUrl = url;
-
-                if (authMethod === 'query') {
-                    const separator = url.includes('?') ? '&' : '?';
-                    finalUrl = `${url}${separator}api_key=${encodeURIComponent(key)}`;
-                } else if (authMethod === 'header') {
-                    fetchOptions.headers['Authorization'] = `Bearer ${key}`;
-                } else if (authMethod === 'header-key') {
-                    fetchOptions.headers['X-API-Key'] = key;
-                }
-
-                const proxyUrl = 'https://upsocialnew8.onrender.com/api/proxy';
-                
-                const response = await fetch(proxyUrl, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ 
-                        url: finalUrl, 
-                        key: key, 
-                        auth: authMethod 
-                    })
-                });
-
-                if (!response.ok) {
-                    throw new Error('HTTP ' + response.status);
-                }
-
-                const data = await response.json();
-
-                if (data.error) {
-                    throw new Error(data.error);
-                }
-
-                // Extract services
-                let services = [];
-                if (Array.isArray(data)) {
-                    services = data;
-                } else if (data.services && Array.isArray(data.services)) {
-                    services = data.services;
-                } else if (data.data && Array.isArray(data.data)) {
-                    services = data.data;
-                } else if (data.result && Array.isArray(data.result)) {
-                    services = data.result;
-                } else if (typeof data === 'object' && data !== null) {
-                    services = Object.values(data).filter(item => item && typeof item === 'object');
-                }
-
-                if (services.length > 0) {
+            if (!url || !key) { showMessage('apiStatus', '❌ Please fill in API URL and Key', 'error'); return; }
+            localStorage.setItem('upsocial_apiSettings', JSON.stringify({ provider, url, key, authMethod }));
+            testAPI();
+            setTimeout(() => {
+                if (localStorage.getItem('upsocial_testServices')) {
+                    const services = JSON.parse(localStorage.getItem('upsocial_testServices'));
                     const formattedServices = services.map((s, idx) => ({
-                        id: s.service || s.id || s.service_id || (idx + 1),
+                        id: s.service || s.id || (idx + 1),
                         name: s.name || s.service_name || 'Service ' + (idx + 1),
                         platform: detectPlatform(s.name || s.category || ''),
-                        price: parseFloat(s.rate || s.price || s.cost || 0),
-                        min: s.min || 0,
-                        max: s.max || 0,
+                        price: parseFloat(s.rate || s.price || 0),
                         icon: getPlatformIcon(s.name || s.category || '')
                     }));
-
                     localStorage.setItem('upsocial_services', JSON.stringify(formattedServices));
-                    localStorage.setItem('upsocial_testServices', JSON.stringify(services));
-                    localStorage.setItem('upsocial_apiLastUpdate', new Date().toLocaleString());
-                    
-                    showAPIStatus();
-                    showServicePreview(services.slice(0, 5));
-                    showMessage('apiStatus', `✅ Settings saved! ${services.length} services imported`, 'success');
-                } else {
-                    showMessage('apiStatus', '⚠️ No services found to import', 'error');
+                    showMessage('apiStatus', '✅ Settings saved! Services imported: ' + services.length, 'success');
                 }
-            } catch (error) {
-                console.error('Save Error:', error);
-                showMessage('apiStatus', '❌ Error: ' + error.message, 'error');
-            } finally {
-                setSaveLoading(false);
+            }, 2000);
+        }
+
+        function resetAPISettings() {
+            if (confirm('Are you sure you want to reset API settings?')) {
+                localStorage.removeItem('upsocial_apiSettings');
+                localStorage.removeItem('upsocial_testServices');
+                localStorage.removeItem('upsocial_apiLastUpdate');
+                localStorage.removeItem('upsocial_services');
+                document.getElementById('apiProvider').value = 'custom';
+                document.getElementById('apiUrl').value = '';
+                document.getElementById('apiKey').value = '';
+                document.getElementById('apiStatusCard').style.display = 'none';
+                showMessage('apiStatus', '✅ API settings reset', 'success');
             }
         }
 
+        // Payment gateway selection
+        const allGateways = ['paystack','flutterwave','korapay','monnify','squad','manual'];
+
+        function selectGateway(gw) {
+            selectedGateway = gw;
+            allGateways.forEach(g => {
+                document.getElementById('gw-' + g).classList.toggle('selected', g === gw);
+                document.getElementById('fields-' + g).classList.toggle('active', g === gw);
+            });
+        }
+
+        function savePaymentSettings() {
+            const settings = {
+                gateway: selectedGateway,
+                paystackPublic: document.getElementById('paystackPublic').value.trim(),
+                paystackSecret: document.getElementById('paystackSecret').value.trim(),
+                flwPublic: document.getElementById('flwPublic').value.trim(),
+                flwSecret: document.getElementById('flwSecret').value.trim(),
+                koraPublic: document.getElementById('koraPublic').value.trim(),
+                koraSecret: document.getElementById('koraSecret').value.trim(),
+                monnifyKey: document.getElementById('monnifyKey').value.trim(),
+                monnifySecret: document.getElementById('monnifySecret').value.trim(),
+                monnifyContract: document.getElementById('monnifyContract').value.trim(),
+                squadPublic: document.getElementById('squadPublic').value.trim(),
+                squadSecret: document.getElementById('squadSecret').value.trim(),
+                bankName: document.getElementById('bankName').value.trim(),
+                bankAccount: document.getElementById('bankAccount').value.trim(),
+                bankAccountName: document.getElementById('bankAccountName').value.trim(),
+                bankInstructions: document.getElementById('bankInstructions').value.trim(),
+                testMode: document.getElementById('testMode').checked,
+                autoFund: document.getElementById('autoFund').checked,
+                emailReceipt: document.getElementById('emailReceipt').checked
+            };
+            localStorage.setItem('upsocial_paymentSettings', JSON.stringify(settings));
+            showMessage('paymentStatus', '✅ Payment settings saved!', 'success');
+        }
+
+        function resetPaymentSettings() {
+            if (!confirm('Reset payment settings?')) return;
+            localStorage.removeItem('upsocial_paymentSettings');
+            selectGateway('paystack');
+            ['paystackPublic','paystackSecret','flwPublic','flwSecret','koraPublic','koraSecret',
+             'monnifyKey','monnifySecret','monnifyContract','squadPublic','squadSecret',
+             'bankName','bankAccount','bankAccountName','bankInstructions'].forEach(id => {
+                document.getElementById(id).value = '';
+            });
+            document.getElementById('testMode').checked = false;
+            document.getElementById('autoFund').checked = true;
+            document.getElementById('emailReceipt').checked = false;
+            showMessage('paymentStatus', '✅ Payment settings reset', 'success');
+        }
+
         function detectPlatform(name) {
-            if (!name) return 'Social Media';
             const n = name.toLowerCase();
             if (n.includes('instagram') || n.includes('ig')) return 'Instagram';
             if (n.includes('tiktok') || n.includes('tt')) return 'TikTok';
@@ -1019,60 +1132,19 @@
             return icons[platform] || '<i class="fas fa-star"></i>';
         }
 
-        function resetAPISettings() {
-            if (confirm('Are you sure you want to reset API settings?')) {
-                localStorage.removeItem('upsocial_apiSettings');
-                localStorage.removeItem('upsocial_testServices');
-                localStorage.removeItem('upsocial_apiLastUpdate');
-                localStorage.removeItem('upsocial_services');
-                
-                document.getElementById('apiProvider').value = 'custom';
-                document.getElementById('apiUrl').value = '';
-                document.getElementById('apiKey').value = '';
-                document.getElementById('authMethod').value = 'query';
-                document.getElementById('apiStatusCard').style.display = 'none';
-                document.getElementById('servicePreview').style.display = 'none';
-                
-                showMessage('apiStatus', '✅ API settings reset', 'success');
-            }
-        }
-
         function uploadLogo(type) {
             const input = document.getElementById(type === 'header' ? 'headerLogoInput' : 'cardLogoInput');
             const file = input.files[0];
-
             if (!file) return;
-
-            // Validate file type
-            if (!file.type.startsWith('image/')) {
-                showMessage('brandingStatus', '❌ Please upload an image file', 'error');
-                return;
-            }
-
-            // Validate file size (max 2MB)
-            if (file.size > 2 * 1024 * 1024) {
-                showMessage('brandingStatus', '❌ Image must be less than 2MB', 'error');
-                return;
-            }
-
             const reader = new FileReader();
             reader.onload = function(e) {
-                const logoData = e.target.result;
                 const key = type === 'header' ? 'upsocial_headerLogo' : 'upsocial_iconLogo';
-                
-                localStorage.setItem(key, logoData);
-                
+                localStorage.setItem(key, e.target.result);
                 const preview = document.getElementById(type === 'header' ? 'headerLogoPreview' : 'cardLogoPreview');
-                preview.src = logoData;
+                preview.src = e.target.result;
                 preview.style.display = 'block';
-                
                 showMessage('brandingStatus', '✅ Logo uploaded successfully', 'success');
             };
-
-            reader.onerror = function() {
-                showMessage('brandingStatus', '❌ Error reading file', 'error');
-            };
-
             reader.readAsDataURL(file);
         }
 
@@ -1080,12 +1152,10 @@
             if (confirm('Are you sure you want to reset logos?')) {
                 localStorage.removeItem('upsocial_headerLogo');
                 localStorage.removeItem('upsocial_iconLogo');
-                
                 document.getElementById('headerLogoPreview').style.display = 'none';
                 document.getElementById('cardLogoPreview').style.display = 'none';
                 document.getElementById('headerLogoInput').value = '';
                 document.getElementById('cardLogoInput').value = '';
-                
                 showMessage('brandingStatus', '✅ Logos reset', 'success');
             }
         }
@@ -1093,33 +1163,6 @@
         function goBack() {
             window.history.back();
         }
-
-        // Drag and drop support for logo upload
-        document.querySelectorAll('.upload-area').forEach(area => {
-            area.addEventListener('dragover', (e) => {
-                e.preventDefault();
-                area.classList.add('active');
-            });
-            
-            area.addEventListener('dragleave', () => {
-                area.classList.remove('active');
-            });
-            
-            area.addEventListener('drop', (e) => {
-                e.preventDefault();
-                area.classList.remove('active');
-                const files = e.dataTransfer.files;
-                if (files.length > 0) {
-                    const input = area.nextElementSibling.nextElementSibling; // Skip img, get input
-                    if (input && input.type === 'file') {
-                        const dt = new DataTransfer();
-                        dt.items.add(files[0]);
-                        input.files = dt.files;
-                        input.dispatchEvent(new Event('change'));
-                    }
-                }
-            });
-        });
     </script>
 </body>
 </html>
