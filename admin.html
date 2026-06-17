@@ -139,7 +139,7 @@
             letter-spacing: 0.3px;
         }
         
-        .form-input {
+        .form-input, .form-select {
             width: 100%;
             background: #f5f7fa;
             border: 1.5px solid #e8eef7;
@@ -152,7 +152,7 @@
             letter-spacing: 0.2px;
         }
         
-        .form-input:focus {
+        .form-input:focus, .form-select:focus {
             outline: none;
             border-color: #3CB371;
             background: white;
@@ -418,6 +418,46 @@
             font-size: 24px;
         }
         
+        /* Spinner */
+        .spinner {
+            display: inline-block;
+            width: 14px;
+            height: 14px;
+            border: 2px solid rgba(255,255,255,0.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 0.8s linear infinite;
+            margin-right: 6px;
+            vertical-align: middle;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        /* Service Preview */
+        .service-preview {
+            margin-top: 16px;
+            max-height: 200px;
+            overflow-y: auto;
+            background: #f8fafc;
+            border-radius: 10px;
+            padding: 12px;
+            border: 1px solid #e8eef7;
+        }
+        
+        .service-preview-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px;
+            border-bottom: 1px solid #f0f2f5;
+            font-size: 12px;
+        }
+        
+        .service-preview-item:last-child {
+            border-bottom: none;
+        }
+        
         @media (max-width: 600px) {
             main { padding: 12px; }
             .button-group { grid-template-columns: 1fr 1fr; }
@@ -436,10 +476,10 @@
     <main>
         <!-- Tabs -->
         <div class="tabs">
-            <button class="tab-btn active" onclick="switchTab('api')">
+            <button class="tab-btn active" onclick="switchTab(event, 'api')">
                 <i class="fas fa-plug"></i> API Settings
             </button>
-            <button class="tab-btn" onclick="switchTab('branding')">
+            <button class="tab-btn" onclick="switchTab(event, 'branding')">
                 <i class="fas fa-palette"></i> Branding
             </button>
         </div>
@@ -454,7 +494,7 @@
                 <div class="section-card">
                     <div class="form-group">
                         <label class="form-label">API Provider</label>
-                        <select class="form-input" id="apiProvider" onchange="updateProviderInfo()">
+                        <select class="form-select" id="apiProvider" onchange="updateProviderInfo()">
                             <option value="custom">Custom API</option>
                             <option value="bovasmm">BovaSMM</option>
                             <option value="syncviral">Syncviral</option>
@@ -477,7 +517,7 @@
 
                     <div class="form-group">
                         <label class="form-label">Authentication Method</label>
-                        <select class="form-input" id="authMethod">
+                        <select class="form-select" id="authMethod">
                             <option value="query">Query Parameter (?api_key=...)</option>
                             <option value="header">Bearer Token Header</option>
                             <option value="header-key">Custom Header (X-API-Key)</option>
@@ -485,8 +525,8 @@
                         <div class="form-helper">How your API expects authentication</div>
                     </div>
 
-                    <button class="btn btn-primary test-btn" onclick="testAPI()">
-                        <i class="fas fa-test-tube"></i> Test Connection
+                    <button class="btn btn-primary test-btn" id="testBtn" onclick="testAPI()">
+                        <i class="fas fa-vial"></i> Test Connection
                     </button>
 
                     <div id="apiStatusCard" style="display: none;">
@@ -504,10 +544,11 @@
                                 <span class="status-value" id="lastUpdate">Never</span>
                             </div>
                         </div>
+                        <div id="servicePreview" class="service-preview" style="display: none;"></div>
                     </div>
 
                     <div class="button-group">
-                        <button class="btn btn-primary" onclick="saveAPISettings()">Save & Import Services</button>
+                        <button class="btn btn-primary" id="saveBtn" onclick="saveAPISettings()">Save & Import Services</button>
                         <button class="btn btn-secondary" onclick="resetAPISettings()">Reset</button>
                     </div>
                 </div>
@@ -596,7 +637,7 @@
             loadSettings();
         });
 
-        function switchTab(tab) {
+        function switchTab(event, tab) {
             // Hide all tabs
             document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
             document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
@@ -619,32 +660,36 @@
         }
 
         function loadSettings() {
-            const apiSettings = localStorage.getItem('upsocial_apiSettings');
-            if (apiSettings) {
-                const settings = JSON.parse(apiSettings);
-                document.getElementById('apiProvider').value = settings.provider || 'custom';
-                document.getElementById('apiUrl').value = settings.url || '';
-                document.getElementById('apiKey').value = settings.key || '';
-                document.getElementById('authMethod').value = settings.authMethod || 'header';
-                
-                // Show API status if connected
-                const lastUpdate = localStorage.getItem('upsocial_apiLastUpdate');
-                if (lastUpdate) {
-                    showAPIStatus();
+            try {
+                const apiSettings = localStorage.getItem('upsocial_apiSettings');
+                if (apiSettings) {
+                    const settings = JSON.parse(apiSettings);
+                    document.getElementById('apiProvider').value = settings.provider || 'custom';
+                    document.getElementById('apiUrl').value = settings.url || '';
+                    document.getElementById('apiKey').value = settings.key || '';
+                    document.getElementById('authMethod').value = settings.authMethod || 'header';
+                    
+                    // Show API status if connected
+                    const lastUpdate = localStorage.getItem('upsocial_apiLastUpdate');
+                    if (lastUpdate) {
+                        showAPIStatus();
+                    }
                 }
-            }
 
-            // Load logos
-            const headerLogo = localStorage.getItem('upsocial_headerLogo');
-            if (headerLogo) {
-                document.getElementById('headerLogoPreview').src = headerLogo;
-                document.getElementById('headerLogoPreview').style.display = 'block';
-            }
+                // Load logos
+                const headerLogo = localStorage.getItem('upsocial_headerLogo');
+                if (headerLogo) {
+                    document.getElementById('headerLogoPreview').src = headerLogo;
+                    document.getElementById('headerLogoPreview').style.display = 'block';
+                }
 
-            const cardLogo = localStorage.getItem('upsocial_iconLogo');
-            if (cardLogo) {
-                document.getElementById('cardLogoPreview').src = cardLogo;
-                document.getElementById('cardLogoPreview').style.display = 'block';
+                const cardLogo = localStorage.getItem('upsocial_iconLogo');
+                if (cardLogo) {
+                    document.getElementById('cardLogoPreview').src = cardLogo;
+                    document.getElementById('cardLogoPreview').style.display = 'block';
+                }
+            } catch (e) {
+                console.error('Error loading settings:', e);
             }
         }
 
@@ -658,69 +703,143 @@
             }, 4000);
         }
 
-        function testAPI() {
-    const url = document.getElementById('apiUrl').value.trim();
-    const key = document.getElementById('apiKey').value.trim();
-    const authMethod = document.getElementById('authMethod').value;
-
-    if (!url || !key) {
-        showMessage('apiStatus', '⚠️ Please enter API URL and Key', 'error');
-        return;
-    }
-
-    showMessage('apiStatus', '🔄 Testing connection...', 'info');
-
-    fetch('https://upsocialnew8.onrender.com/api/proxy', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ url: url, key: key, auth: authMethod })
-    })
-    .then(response => {
-        if (!response.ok) throw new Error('HTTP ' + response.status);
-        return response.json();
-    })
-    .then(data => {
-        console.log('Response type:', typeof data);
-        console.log('Is array:', Array.isArray(data));
-        console.log('First item:', data[0]);
-        
-        if (data.error) {
-            showMessage('apiStatus', '❌ Error: ' + data.error, 'error');
-            return;
+        function setButtonLoading(btnId, loading) {
+            const btn = document.getElementById(btnId);
+            if (loading) {
+                btn.disabled = true;
+                btn.innerHTML = '<span class="spinner"></span> Testing...';
+            } else {
+                btn.disabled = false;
+                btn.innerHTML = '<i class="fas fa-vial"></i> Test Connection';
+            }
         }
 
-        // Handle array response (your panel returns an array)
-        let services = [];
-        if (Array.isArray(data)) {
-            services = data;
-        } else if (data.services) {
-            services = data.services;
-        } else if (data.data) {
-            services = data.data;
+        function setSaveLoading(loading) {
+            const btn = document.getElementById('saveBtn');
+            if (loading) {
+                btn.disabled = true;
+                btn.innerHTML = '<span class="spinner"></span> Saving...';
+            } else {
+                btn.disabled = false;
+                btn.innerHTML = 'Save & Import Services';
+            }
         }
 
-        if (services.length > 0) {
-            showMessage('apiStatus', '✅ Connected! Found ' + services.length + ' services', 'success');
-            localStorage.setItem('upsocial_testServices', JSON.stringify(services));
-            localStorage.setItem('upsocial_apiLastUpdate', new Date().toLocaleString());
-            showAPIStatus();
-        } else {
-            showMessage('apiStatus', '⚠️ No services found in response', 'error');
-        }
-    })
-    .catch(error => {
-        console.error('Error:', error);
-        showMessage('apiStatus', '❌ Error: ' + error.message, 'error');
-    });
-}
+        async function testAPI() {
+            const url = document.getElementById('apiUrl').value.trim();
+            const key = document.getElementById('apiKey').value.trim();
+            const authMethod = document.getElementById('authMethod').value;
 
+            if (!url || !key) {
+                showMessage('apiStatus', '⚠️ Please enter API URL and Key', 'error');
+                return;
+            }
+
+            // Validate URL
+            try {
+                new URL(url);
+            } catch {
+                showMessage('apiStatus', '⚠️ Please enter a valid URL', 'error');
+                return;
+            }
+
+            setButtonLoading('testBtn', true);
+            showMessage('apiStatus', '🔄 Testing connection...', 'info');
+
+            try {
+                let fetchOptions = {
+                    method: 'GET',
+                    headers: {}
+                };
+
+                let finalUrl = url;
+
+                // Build request based on auth method
+                if (authMethod === 'query') {
+                    const separator = url.includes('?') ? '&' : '?';
+                    finalUrl = `${url}${separator}api_key=${encodeURIComponent(key)}`;
+                } else if (authMethod === 'header') {
+                    fetchOptions.headers['Authorization'] = `Bearer ${key}`;
+                } else if (authMethod === 'header-key') {
+                    fetchOptions.headers['X-API-Key'] = key;
+                }
+
+                // Try direct fetch first (will fail on CORS but let's try)
+                // For production, use your proxy
+                const proxyUrl = 'https://upsocialnew8.onrender.com/api/proxy';
+                
+                const response = await fetch(proxyUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ 
+                        url: finalUrl, 
+                        key: key, 
+                        auth: authMethod 
+                    })
+                });
+
+                if (!response.ok) {
+                    throw new Error('HTTP ' + response.status);
+                }
+
+                const data = await response.json();
+                console.log('API Response:', data);
+
+                // Handle error response from proxy
+                if (data.error) {
+                    throw new Error(data.error);
+                }
+
+                // Extract services from various response formats
+                let services = [];
+                if (Array.isArray(data)) {
+                    services = data;
+                } else if (data.services && Array.isArray(data.services)) {
+                    services = data.services;
+                } else if (data.data && Array.isArray(data.data)) {
+                    services = data.data;
+                } else if (data.result && Array.isArray(data.result)) {
+                    services = data.result;
+                } else if (typeof data === 'object' && data !== null) {
+                    // Some APIs return an object with numeric keys
+                    services = Object.values(data).filter(item => item && typeof item === 'object');
+                }
+
+                if (services.length > 0) {
+                    showMessage('apiStatus', `✅ Connected! Found ${services.length} services`, 'success');
+                    localStorage.setItem('upsocial_testServices', JSON.stringify(services));
+                    localStorage.setItem('upsocial_apiLastUpdate', new Date().toLocaleString());
+                    showAPIStatus();
+                    showServicePreview(services.slice(0, 5)); // Show first 5
+                } else {
+                    showMessage('apiStatus', '⚠️ No services found in response. Check console for details.', 'error');
+                    console.log('Response structure:', data);
+                }
+            } catch (error) {
+                console.error('API Test Error:', error);
+                showMessage('apiStatus', '❌ Error: ' + error.message, 'error');
+                
+                // Show disconnected status
+                document.getElementById('apiStatusCard').style.display = 'block';
+                document.getElementById('connStatus').textContent = 'Failed';
+                document.getElementById('connStatus').className = 'status-badge disconnected';
+            } finally {
+                setButtonLoading('testBtn', false);
+            }
+        }
 
         function showAPIStatus() {
             document.getElementById('apiStatusCard').style.display = 'block';
             
             const lastUpdate = localStorage.getItem('upsocial_apiLastUpdate');
             const testServices = localStorage.getItem('upsocial_testServices');
-            const servicesCount = testServices ? JSON.parse(testServices).length : 0;
+            let servicesCount = 0;
+            
+            try {
+                servicesCount = testServices ? JSON.parse(testServices).length : 0;
+            } catch (e) {
+                console.error('Error parsing services:', e);
+            }
 
             document.getElementById('connStatus').textContent = 'Connected';
             document.getElementById('connStatus').className = 'status-badge connected';
@@ -728,7 +847,30 @@
             document.getElementById('lastUpdate').textContent = lastUpdate || 'Never';
         }
 
-        function saveAPISettings() {
+        function showServicePreview(services) {
+            const previewDiv = document.getElementById('servicePreview');
+            if (!services || services.length === 0) {
+                previewDiv.style.display = 'none';
+                return;
+            }
+
+            let html = '<div style="font-size: 12px; font-weight: 600; margin-bottom: 8px; color: #0a0e27;">Preview (First 5):</div>';
+            services.forEach((s, i) => {
+                const name = s.name || s.service_name || s.title || 'Unknown';
+                const price = s.rate || s.price || s.cost || 'N/A';
+                html += `
+                    <div class="service-preview-item">
+                        <span>${i + 1}. ${name}</span>
+                        <span style="color: #3CB371; font-weight: 600;">$${price}</span>
+                    </div>
+                `;
+            });
+            
+            previewDiv.innerHTML = html;
+            previewDiv.style.display = 'block';
+        }
+
+        async function saveAPISettings() {
             const provider = document.getElementById('apiProvider').value;
             const url = document.getElementById('apiUrl').value.trim();
             const key = document.getElementById('apiKey').value.trim();
@@ -738,6 +880,8 @@
                 showMessage('apiStatus', '❌ Please fill in API URL and Key', 'error');
                 return;
             }
+
+            setSaveLoading(true);
 
             // Save settings
             const settings = {
@@ -749,69 +893,132 @@
 
             localStorage.setItem('upsocial_apiSettings', JSON.stringify(settings));
 
-            // Trigger service import
-            testAPI();
+            // Test and import services
+            try {
+                let fetchOptions = {
+                    method: 'GET',
+                    headers: {}
+                };
 
-            setTimeout(() => {
-                if (localStorage.getItem('upsocial_testServices')) {
-                                   const services = JSON.parse(localStorage.getItem('upsocial_testServices'));
-                const formattedServices = services.map((s, idx) => ({
-                    id: s.service || s.id || (idx + 1),
-                    name: s.name || s.service_name || 'Service ' + (idx + 1),
-                    platform: detectPlatform(s.name || s.category || ''),
-                    price: parseFloat(s.rate || s.price || 0),
-                    icon: getPlatformIcon(s.name || s.category || '')
-                }));
-                localStorage.setItem('upsocial_services', JSON.stringify(formattedServices));
+                let finalUrl = url;
 
-                    showMessage('apiStatus', '✅ Settings saved! Services imported: ' + services.length, 'success');
+                if (authMethod === 'query') {
+                    const separator = url.includes('?') ? '&' : '?';
+                    finalUrl = `${url}${separator}api_key=${encodeURIComponent(key)}`;
+                } else if (authMethod === 'header') {
+                    fetchOptions.headers['Authorization'] = `Bearer ${key}`;
+                } else if (authMethod === 'header-key') {
+                    fetchOptions.headers['X-API-Key'] = key;
                 }
-            }, 1000);
+
+                const proxyUrl = 'https://upsocialnew8.onrender.com/api/proxy';
+                
+                const response = await fetch(proxyUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ 
+                        url: finalUrl, 
+                        key: key, 
+                        auth: authMethod 
+                    })
+                });
+
+                if (!response.ok) {
+                    throw new Error('HTTP ' + response.status);
+                }
+
+                const data = await response.json();
+
+                if (data.error) {
+                    throw new Error(data.error);
+                }
+
+                // Extract services
+                let services = [];
+                if (Array.isArray(data)) {
+                    services = data;
+                } else if (data.services && Array.isArray(data.services)) {
+                    services = data.services;
+                } else if (data.data && Array.isArray(data.data)) {
+                    services = data.data;
+                } else if (data.result && Array.isArray(data.result)) {
+                    services = data.result;
+                } else if (typeof data === 'object' && data !== null) {
+                    services = Object.values(data).filter(item => item && typeof item === 'object');
+                }
+
+                if (services.length > 0) {
+                    const formattedServices = services.map((s, idx) => ({
+                        id: s.service || s.id || s.service_id || (idx + 1),
+                        name: s.name || s.service_name || 'Service ' + (idx + 1),
+                        platform: detectPlatform(s.name || s.category || ''),
+                        price: parseFloat(s.rate || s.price || s.cost || 0),
+                        min: s.min || 0,
+                        max: s.max || 0,
+                        icon: getPlatformIcon(s.name || s.category || '')
+                    }));
+
+                    localStorage.setItem('upsocial_services', JSON.stringify(formattedServices));
+                    localStorage.setItem('upsocial_testServices', JSON.stringify(services));
+                    localStorage.setItem('upsocial_apiLastUpdate', new Date().toLocaleString());
+                    
+                    showAPIStatus();
+                    showServicePreview(services.slice(0, 5));
+                    showMessage('apiStatus', `✅ Settings saved! ${services.length} services imported`, 'success');
+                } else {
+                    showMessage('apiStatus', '⚠️ No services found to import', 'error');
+                }
+            } catch (error) {
+                console.error('Save Error:', error);
+                showMessage('apiStatus', '❌ Error: ' + error.message, 'error');
+            } finally {
+                setSaveLoading(false);
+            }
         }
 
-function detectPlatform(name) {
-    const n = name.toLowerCase();
-    if (n.includes('instagram') || n.includes('ig')) return 'Instagram';
-    if (n.includes('tiktok') || n.includes('tt')) return 'TikTok';
-    if (n.includes('youtube') || n.includes('yt')) return 'YouTube';
-    if (n.includes('twitter') || n.includes('x') || n.includes('tweet')) return 'Twitter';
-    if (n.includes('facebook') || n.includes('fb')) return 'Facebook';
-    if (n.includes('telegram') || n.includes('tg')) return 'Telegram';
-    if (n.includes('spotify')) return 'Spotify';
-    if (n.includes('soundcloud')) return 'SoundCloud';
-    if (n.includes('linkedin')) return 'LinkedIn';
-    if (n.includes('twitch')) return 'Twitch';
-    if (n.includes('discord')) return 'Discord';
-    if (n.includes('thread')) return 'Threads';
-    if (n.includes('audiomack')) return 'Audiomack';
-    if (n.includes('apple')) return 'Apple Music';
-    if (n.includes('website') || n.includes('traffic')) return 'Website';
-    return 'Social Media';
-}
+        function detectPlatform(name) {
+            if (!name) return 'Social Media';
+            const n = name.toLowerCase();
+            if (n.includes('instagram') || n.includes('ig')) return 'Instagram';
+            if (n.includes('tiktok') || n.includes('tt')) return 'TikTok';
+            if (n.includes('youtube') || n.includes('yt')) return 'YouTube';
+            if (n.includes('twitter') || n.includes('x') || n.includes('tweet')) return 'Twitter';
+            if (n.includes('facebook') || n.includes('fb')) return 'Facebook';
+            if (n.includes('telegram') || n.includes('tg')) return 'Telegram';
+            if (n.includes('spotify')) return 'Spotify';
+            if (n.includes('soundcloud')) return 'SoundCloud';
+            if (n.includes('linkedin')) return 'LinkedIn';
+            if (n.includes('twitch')) return 'Twitch';
+            if (n.includes('discord')) return 'Discord';
+            if (n.includes('thread')) return 'Threads';
+            if (n.includes('audiomack')) return 'Audiomack';
+            if (n.includes('apple')) return 'Apple Music';
+            if (n.includes('website') || n.includes('traffic')) return 'Website';
+            return 'Social Media';
+        }
 
-function getPlatformIcon(name) {
-    const platform = detectPlatform(name);
-    const icons = {
-        'Instagram': '<i class="fab fa-instagram"></i>',
-        'TikTok': '<i class="fab fa-tiktok"></i>',
-        'YouTube': '<i class="fab fa-youtube"></i>',
-        'Twitter': '<i class="fab fa-x-twitter"></i>',
-        'Facebook': '<i class="fab fa-facebook-f"></i>',
-        'Telegram': '<i class="fab fa-telegram"></i>',
-        'Spotify': '<i class="fab fa-spotify"></i>',
-        'SoundCloud': '<i class="fab fa-soundcloud"></i>',
-        'LinkedIn': '<i class="fab fa-linkedin-in"></i>',
-        'Twitch': '<i class="fab fa-twitch"></i>',
-        'Discord': '<i class="fab fa-discord"></i>',
-        'Threads': '<i class="fab fa-threads"></i>',
-        'Audiomack': '<i class="fas fa-music"></i>',
-        'Apple Music': '<i class="fab fa-apple"></i>',
-        'Website': '<i class="fas fa-globe"></i>'
-    };
-    return icons[platform] || '<i class="fas fa-star"></i>';
-}
+        function getPlatformIcon(name) {
+            const platform = detectPlatform(name);
+            const icons = {
+                'Instagram': '<i class="fab fa-instagram"></i>',
+                'TikTok': '<i class="fab fa-tiktok"></i>',
+                'YouTube': '<i class="fab fa-youtube"></i>',
+                'Twitter': '<i class="fab fa-x-twitter"></i>',
+                'Facebook': '<i class="fab fa-facebook-f"></i>',
+                'Telegram': '<i class="fab fa-telegram"></i>',
+                'Spotify': '<i class="fab fa-spotify"></i>',
+                'SoundCloud': '<i class="fab fa-soundcloud"></i>',
+                'LinkedIn': '<i class="fab fa-linkedin-in"></i>',
+                'Twitch': '<i class="fab fa-twitch"></i>',
+                'Discord': '<i class="fab fa-discord"></i>',
+                'Threads': '<i class="fab fa-threads"></i>',
+                'Audiomack': '<i class="fas fa-music"></i>',
+                'Apple Music': '<i class="fab fa-apple"></i>',
+                'Website': '<i class="fas fa-globe"></i>'
+            };
+            return icons[platform] || '<i class="fas fa-star"></i>';
+        }
 
-        
         function resetAPISettings() {
             if (confirm('Are you sure you want to reset API settings?')) {
                 localStorage.removeItem('upsocial_apiSettings');
@@ -822,7 +1029,9 @@ function getPlatformIcon(name) {
                 document.getElementById('apiProvider').value = 'custom';
                 document.getElementById('apiUrl').value = '';
                 document.getElementById('apiKey').value = '';
+                document.getElementById('authMethod').value = 'query';
                 document.getElementById('apiStatusCard').style.display = 'none';
+                document.getElementById('servicePreview').style.display = 'none';
                 
                 showMessage('apiStatus', '✅ API settings reset', 'success');
             }
@@ -833,6 +1042,18 @@ function getPlatformIcon(name) {
             const file = input.files[0];
 
             if (!file) return;
+
+            // Validate file type
+            if (!file.type.startsWith('image/')) {
+                showMessage('brandingStatus', '❌ Please upload an image file', 'error');
+                return;
+            }
+
+            // Validate file size (max 2MB)
+            if (file.size > 2 * 1024 * 1024) {
+                showMessage('brandingStatus', '❌ Image must be less than 2MB', 'error');
+                return;
+            }
 
             const reader = new FileReader();
             reader.onload = function(e) {
@@ -846,6 +1067,10 @@ function getPlatformIcon(name) {
                 preview.style.display = 'block';
                 
                 showMessage('brandingStatus', '✅ Logo uploaded successfully', 'success');
+            };
+
+            reader.onerror = function() {
+                showMessage('brandingStatus', '❌ Error reading file', 'error');
             };
 
             reader.readAsDataURL(file);
@@ -868,6 +1093,33 @@ function getPlatformIcon(name) {
         function goBack() {
             window.history.back();
         }
+
+        // Drag and drop support for logo upload
+        document.querySelectorAll('.upload-area').forEach(area => {
+            area.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                area.classList.add('active');
+            });
+            
+            area.addEventListener('dragleave', () => {
+                area.classList.remove('active');
+            });
+            
+            area.addEventListener('drop', (e) => {
+                e.preventDefault();
+                area.classList.remove('active');
+                const files = e.dataTransfer.files;
+                if (files.length > 0) {
+                    const input = area.nextElementSibling.nextElementSibling; // Skip img, get input
+                    if (input && input.type === 'file') {
+                        const dt = new DataTransfer();
+                        dt.items.add(files[0]);
+                        input.files = dt.files;
+                        input.dispatchEvent(new Event('change'));
+                    }
+                }
+            });
+        });
     </script>
 </body>
 </html>
